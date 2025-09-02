@@ -38,95 +38,103 @@ console.log(`Listening on ${port}`);
 async function updateEntities() {
 	const log = console.draft("> Updating entities...");
 
-	const estimatedTimetable = await fetchEstimatedTimetable();
+	try {
+		const estimatedTimetable = await fetchEstimatedTimetable();
 
-	const timetableVehicleJourneys = estimatedTimetable.Siri.ServiceDelivery.EstimatedTimetableDelivery.flatMap(
-		({ EstimatedJourneyVersionFrame }) => EstimatedJourneyVersionFrame,
-	).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney);
+		const timetableVehicleJourneys = estimatedTimetable.Siri.ServiceDelivery.EstimatedTimetableDelivery.flatMap(
+			({ EstimatedJourneyVersionFrame }) => EstimatedJourneyVersionFrame,
+		).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney);
 
-	for (const vehicleJourney of timetableVehicleJourneys) {
-		tripUpdates.set(vehicleJourney.DatedVehicleJourneyRef.value, {
-			stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).map(
-				(estimatedCall) => {
-					const hasRealtime =
-						typeof estimatedCall.ExpectedArrivalTime !== "undefined" ||
-						typeof estimatedCall.ExpectedDepartureTime !== "undefined";
+		for (const vehicleJourney of timetableVehicleJourneys) {
+			tripUpdates.set(vehicleJourney.DatedVehicleJourneyRef.value, {
+				stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).map(
+					(estimatedCall) => {
+						const hasRealtime =
+							typeof estimatedCall.ExpectedArrivalTime !== "undefined" ||
+							typeof estimatedCall.ExpectedDepartureTime !== "undefined";
 
-					const partialStopTime = {
-						stopId: parseSiriRef(estimatedCall.StopPointRef.value),
-						stopSequence: estimatedCall.Order,
-					} as const;
+						const partialStopTime = {
+							stopId: parseSiriRef(estimatedCall.StopPointRef.value),
+							stopSequence: estimatedCall.Order,
+						} as const;
 
-					if (!hasRealtime) {
+						if (!hasRealtime) {
+							return {
+								...partialStopTime,
+								scheduleRelationship:
+									GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.NO_DATA,
+							};
+						}
+
 						return {
+							arrival:
+								typeof estimatedCall.ExpectedArrivalTime !== "undefined"
+									? {
+											time: Math.floor(
+												Temporal.Instant.from(estimatedCall.ExpectedArrivalTime).epochMilliseconds / 1000,
+											),
+											delay: Temporal.Instant.from(estimatedCall.ExpectedArrivalTime)
+												.since(estimatedCall.AimedArrivalTime)
+												.total("seconds"),
+										}
+									: undefined,
+							departure:
+								typeof estimatedCall.ExpectedDepartureTime !== "undefined"
+									? {
+											time: Math.floor(
+												Temporal.Instant.from(estimatedCall.ExpectedDepartureTime).epochMilliseconds / 1000,
+											),
+											delay: Temporal.Instant.from(estimatedCall.ExpectedDepartureTime)
+												.since(estimatedCall.AimedDepartureTime)
+												.total("seconds"),
+										}
+									: undefined,
 							...partialStopTime,
 							scheduleRelationship:
-								GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.NO_DATA,
+								GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SCHEDULED,
 						};
-					}
-
-					return {
-						arrival:
-							typeof estimatedCall.ExpectedArrivalTime !== "undefined"
-								? {
-										time: Math.floor(Temporal.Instant.from(estimatedCall.ExpectedArrivalTime).epochMilliseconds / 1000),
-										delay: Temporal.Instant.from(estimatedCall.ExpectedArrivalTime)
-											.since(estimatedCall.AimedArrivalTime)
-											.total("seconds"),
-									}
-								: undefined,
-						departure:
-							typeof estimatedCall.ExpectedDepartureTime !== "undefined"
-								? {
-										time: Math.floor(
-											Temporal.Instant.from(estimatedCall.ExpectedDepartureTime).epochMilliseconds / 1000,
-										),
-										delay: Temporal.Instant.from(estimatedCall.ExpectedDepartureTime)
-											.since(estimatedCall.AimedDepartureTime)
-											.total("seconds"),
-									}
-								: undefined,
-						...partialStopTime,
-						scheduleRelationship:
-							GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.SCHEDULED,
-					};
+					},
+				),
+				timestamp: Math.floor(Temporal.Instant.from(vehicleJourney.RecordedAtTime).epochMilliseconds / 1000),
+				trip: {
+					routeId: parseSiriRef(vehicleJourney.LineRef.value),
+					directionId: vehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
+					tripId: extractTripId(vehicleJourney.DatedVehicleJourneyRef.value),
+					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
-			),
-			timestamp: Math.floor(Temporal.Instant.from(vehicleJourney.RecordedAtTime).epochMilliseconds / 1000),
-			trip: {
-				routeId: parseSiriRef(vehicleJourney.LineRef.value),
-				directionId: vehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
-				tripId: extractTripId(vehicleJourney.DatedVehicleJourneyRef.value),
-				scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
-			},
-		});
-	}
+			});
+		}
 
-	const vehicleMonitoring = await fetchVehicleMonitoring();
+		const vehicleMonitoring = await fetchVehicleMonitoring();
 
-	const vehicleActivities = vehicleMonitoring.Siri.ServiceDelivery.VehicleMonitoringDelivery.flatMap(
-		({ VehicleActivity }) => VehicleActivity,
-	);
+		const vehicleActivities = vehicleMonitoring.Siri.ServiceDelivery.VehicleMonitoringDelivery.flatMap(
+			({ VehicleActivity }) => VehicleActivity,
+		);
 
-	for (const vehicleActivity of vehicleActivities) {
-		vehiclePositions.set(vehicleActivity.VehicleMonitoringRef.value, {
-			position: {
-				latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
-				longitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Longitude,
-				bearing: vehicleActivity.MonitoredVehicleJourney.Bearing,
-			},
-			timestamp: Math.floor(Temporal.Instant.from(vehicleActivity.RecordedAtTime).epochMilliseconds / 1000),
-			trip: {
-				routeId: parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value),
-				directionId: vehicleActivity.MonitoredVehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
-				tripId: extractTripId(vehicleActivity.MonitoredVehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef),
-				scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
-			},
-			vehicle: {
-				id: vehicleActivity.VehicleMonitoringRef.value,
-				label: vehicleActivity.VehicleMonitoringRef.value,
-			},
-		});
+		for (const vehicleActivity of vehicleActivities) {
+			vehiclePositions.set(vehicleActivity.VehicleMonitoringRef.value, {
+				position: {
+					latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
+					longitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Longitude,
+					bearing: vehicleActivity.MonitoredVehicleJourney.Bearing,
+				},
+				timestamp: Math.floor(Temporal.Instant.from(vehicleActivity.RecordedAtTime).epochMilliseconds / 1000),
+				trip: {
+					routeId: parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value),
+					directionId: vehicleActivity.MonitoredVehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
+					tripId: extractTripId(vehicleActivity.MonitoredVehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef),
+					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
+				},
+				vehicle: {
+					id: vehicleActivity.VehicleMonitoringRef.value,
+					label: vehicleActivity.VehicleMonitoringRef.value,
+				},
+			});
+		}
+
+		log("v Done updating entities!");
+	} catch (e) {
+		log("x Failed to update entities", e);
 	}
 
 	for (const [key, tripUpdate] of tripUpdates) {
@@ -138,8 +146,6 @@ async function updateEntities() {
 		const now = Math.floor(Date.now() / 1000);
 		if (now - (vehiclePosition.timestamp as number) > 3600) vehiclePositions.delete(key);
 	}
-
-	log("v Done updating entities!");
 }
 
 await updateEntities();
