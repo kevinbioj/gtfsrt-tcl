@@ -47,7 +47,7 @@ async function updateEntities() {
 
 		for (const vehicleJourney of timetableVehicleJourneys) {
 			tripUpdates.set(vehicleJourney.DatedVehicleJourneyRef.value, {
-				stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).map(
+				stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).flatMap(
 					(estimatedCall) => {
 						const hasRealtime =
 							typeof estimatedCall.ExpectedArrivalTime !== "undefined" ||
@@ -59,11 +59,12 @@ async function updateEntities() {
 						} as const;
 
 						if (!hasRealtime) {
-							return {
-								...partialStopTime,
-								scheduleRelationship:
-									GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.NO_DATA,
-							};
+							return [];
+							// return {
+							// 	...partialStopTime,
+							// 	scheduleRelationship:
+							// 		GtfsRealtime.transit_realtime.TripUpdate.StopTimeUpdate.ScheduleRelationship.NO_DATA,
+							// };
 						}
 
 						return {
