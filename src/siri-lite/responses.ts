@@ -37,7 +37,7 @@ export type EstimatedTimetableResponse = {
 				DataSource: string;
 				EstimatedCalls: {
 					EstimatedCall: Array<{
-						StopPointRef: {
+						StopPointRef?: {
 							value: string;
 						};
 						Order: number;
@@ -80,6 +80,14 @@ export type VehicleMonitoringResponse = {
 				Bearing: number;
 				VehicleRef: {
 					value: string;
+				};
+				Delay: string;
+				MonitoredCall: {
+					AimedDepartureTime: string;
+					StopPointRef: {
+						value: string;
+					};
+					Order: number;
 				};
 			};
 			RecordedAtTime: string;

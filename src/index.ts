@@ -54,7 +54,7 @@ async function updateEntities() {
 							typeof estimatedCall.ExpectedDepartureTime !== "undefined";
 
 						const partialStopTime = {
-							stopId: parseSiriRef(estimatedCall.StopPointRef.value),
+							stopId: estimatedCall.StopPointRef ? parseSiriRef(estimatedCall.StopPointRef.value) : undefined,
 							stopSequence: estimatedCall.Order,
 						} as const;
 
