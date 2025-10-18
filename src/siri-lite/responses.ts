@@ -22,10 +22,13 @@ export type EstimatedTimetableResponse = {
 					value: string;
 				};
 				DirectionRef: {
-					value: "Forward" | "Backward";
+					value: "inbound" | "outbound";
 				};
-				DatedVehicleJourneyRef: {
-					value: string;
+				FramedVehicleJourneyRef: {
+					DataFrameRef: {
+						value: string;
+					};
+					DatedVehicleJourneyRef: string;
 				};
 				Cancellation: boolean;
 				JourneyPatternRef: {
@@ -65,7 +68,7 @@ export type VehicleMonitoringResponse = {
 					value: string;
 				};
 				DirectionRef: {
-					value: "Forward" | "Backward";
+					value: "inbound" | "outbound";
 				};
 				FramedVehicleJourneyRef: {
 					DataFrameRef: {

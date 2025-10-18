@@ -46,7 +46,7 @@ async function updateEntities() {
 		).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney);
 
 		for (const vehicleJourney of timetableVehicleJourneys) {
-			tripUpdates.set(vehicleJourney.DatedVehicleJourneyRef.value, {
+			tripUpdates.set(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef, {
 				stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).flatMap(
 					(estimatedCall) => {
 						const hasRealtime =
@@ -99,8 +99,8 @@ async function updateEntities() {
 				timestamp: Math.floor(Temporal.Instant.from(vehicleJourney.RecordedAtTime).epochMilliseconds / 1000),
 				trip: {
 					routeId: parseSiriRef(vehicleJourney.LineRef.value),
-					directionId: vehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
-					tripId: extractTripId(vehicleJourney.DatedVehicleJourneyRef.value),
+					directionId: vehicleJourney.DirectionRef.value === "outbound" ? 0 : 1,
+					tripId: extractTripId(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef),
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
 			});
@@ -122,7 +122,7 @@ async function updateEntities() {
 				timestamp: Math.floor(Temporal.Instant.from(vehicleActivity.RecordedAtTime).epochMilliseconds / 1000),
 				trip: {
 					routeId: parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value),
-					directionId: vehicleActivity.MonitoredVehicleJourney.DirectionRef.value === "Forward" ? 0 : 1,
+					directionId: vehicleActivity.MonitoredVehicleJourney.DirectionRef.value === "outbound" ? 0 : 1,
 					tripId: extractTripId(vehicleActivity.MonitoredVehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef),
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
