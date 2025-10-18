@@ -113,6 +113,8 @@ async function updateEntities() {
 		);
 
 		for (const vehicleActivity of vehicleActivities) {
+			const vehicleId = vehicleActivity.VehicleMonitoringRef.value.split(":")[3];
+
 			vehiclePositions.set(vehicleActivity.VehicleMonitoringRef.value, {
 				position: {
 					latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
@@ -127,8 +129,8 @@ async function updateEntities() {
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
 				vehicle: {
-					id: vehicleActivity.VehicleMonitoringRef.value,
-					label: vehicleActivity.VehicleMonitoringRef.value,
+					id: vehicleId,
+					label: vehicleId,
 				},
 			});
 		}
