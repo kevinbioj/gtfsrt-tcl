@@ -14,7 +14,7 @@ export function createFeed(
 		entity: [
 			...tripUpdates
 				.entries()
-				.map(([id, tripUpdate]) => ({ id, tripUpdate }))
+				.flatMap(([id, tripUpdate]) => (tripUpdate.stopTimeUpdate?.length ? [{ id, tripUpdate }] : []))
 				.toArray(),
 			...vehiclePositions
 				.entries()
