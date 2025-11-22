@@ -42,8 +42,8 @@ async function updateEntities() {
 		const estimatedTimetable = await fetchEstimatedTimetable();
 
 		const timetableVehicleJourneys = estimatedTimetable.Siri.ServiceDelivery.EstimatedTimetableDelivery.flatMap(
-			({ EstimatedJourneyVersionFrame }) => EstimatedJourneyVersionFrame,
-		).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney);
+			({ EstimatedJourneyVersionFrame }) => EstimatedJourneyVersionFrame ?? [],
+		).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney ?? []);
 
 		for (const vehicleJourney of timetableVehicleJourneys) {
 			tripUpdates.set(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef, {
@@ -109,7 +109,7 @@ async function updateEntities() {
 		const vehicleMonitoring = await fetchVehicleMonitoring();
 
 		const vehicleActivities = vehicleMonitoring.Siri.ServiceDelivery.VehicleMonitoringDelivery.flatMap(
-			({ VehicleActivity }) => VehicleActivity,
+			({ VehicleActivity }) => VehicleActivity ?? [],
 		);
 
 		for (const vehicleActivity of vehicleActivities) {
