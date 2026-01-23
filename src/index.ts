@@ -113,7 +113,7 @@ async function updateEntities() {
 		);
 
 		for (const vehicleActivity of vehicleActivities) {
-			const vehicleId = vehicleActivity.VehicleMonitoringRef.value.split(":")[3];
+			const [,,vehicleType, vehicleId] = vehicleActivity.VehicleMonitoringRef.value.split(":");
 
 			vehiclePositions.set(vehicleActivity.VehicleMonitoringRef.value, {
 				position: {
@@ -129,8 +129,8 @@ async function updateEntities() {
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
 				vehicle: {
-					id: vehicleId,
-					label: vehicleId,
+					id: `${vehicleType}:${vehicleId}`,
+					label: `${vehicleType}:${vehicleId}`,
 				},
 			});
 		}
