@@ -113,15 +113,20 @@ async function updateEntities() {
 		);
 
 		for (const vehicleActivity of vehicleActivities) {
-			let [, , vehicleType, vehicleId] = vehicleActivity.VehicleMonitoringRef.value.split(":");
-
 			const routeId = parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value);
+			let vehicleMonitoringRef = vehicleActivity.VehicleMonitoringRef.value;
 
-			if (typeof routeId === "string" && ["RX", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "TS"].includes(routeId)) {
-				vehicleType = "Tram";
+			if (typeof routeId === "string") {
+				if (["RX", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "TS"].includes(routeId)) {
+					vehicleMonitoringRef = vehicleMonitoringRef.replace("Bus", "Tram");
+				} else if (["7601"].includes(routeId)) {
+					vehicleMonitoringRef = vehicleMonitoringRef.replace("Bus", "Ferry");
+				}
 			}
 
-			vehiclePositions.set(vehicleActivity.VehicleMonitoringRef.value, {
+			const [, , vehicleType, vehicleId] = vehicleMonitoringRef.split(":");
+
+			vehiclePositions.set(vehicleMonitoringRef, {
 				position: {
 					latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
 					longitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Longitude,
