@@ -9,6 +9,8 @@ import { createFeed } from "./gtfs-rt/create-feed.js";
 import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
+import { lineIdToNumber } from "./utils/line-id-2-number.js";
+import { operatorByLine } from "./utils/operator-by-line.js";
 import { parseSiriRef } from "./utils/parse-siri.js";
 
 DraftLog(console);
@@ -46,7 +48,9 @@ async function updateEntities() {
 		).flatMap(({ EstimatedVehicleJourney }) => EstimatedVehicleJourney ?? []);
 
 		for (const vehicleJourney of timetableVehicleJourneys) {
-			tripUpdates.set(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef, {
+			const tripId = extractTripId(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef);
+
+			tripUpdates.set(`TCL:VehicleJourney::${tripId}:LOC`, {
 				stopTimeUpdate: vehicleJourney.EstimatedCalls.EstimatedCall.toSorted((a, b) => a.Order - b.Order).flatMap(
 					(estimatedCall) => {
 						const hasRealtime =
@@ -100,7 +104,7 @@ async function updateEntities() {
 				trip: {
 					routeId: parseSiriRef(vehicleJourney.LineRef.value),
 					directionId: vehicleJourney.DirectionRef.value === "outbound" ? 0 : 1,
-					tripId: extractTripId(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef),
+					tripId,
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
 			});
@@ -114,19 +118,18 @@ async function updateEntities() {
 
 		for (const vehicleActivity of vehicleActivities) {
 			const routeId = parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value);
-			let vehicleMonitoringRef = vehicleActivity.VehicleMonitoringRef.value;
+			const [, , , vehicleId] = vehicleActivity.VehicleMonitoringRef.value.split(":");
 
-			if (typeof routeId === "string") {
-				if (["RX", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "TS"].includes(routeId)) {
-					vehicleMonitoringRef = vehicleMonitoringRef.replace("Bus", "Tram");
-				} else if (["7601"].includes(routeId)) {
-					vehicleMonitoringRef = vehicleMonitoringRef.replace("Bus", "Ferry");
+			let operatorRef = "INCONNU";
+
+			if (routeId !== undefined) {
+				const routeNumber = lineIdToNumber[routeId];
+				if (routeNumber !== undefined) {
+					operatorRef = operatorByLine[routeNumber] ?? "INCONNU";
 				}
 			}
 
-			const [, , vehicleType, vehicleId] = vehicleMonitoringRef.split(":");
-
-			vehiclePositions.set(vehicleMonitoringRef, {
+			vehiclePositions.set(`TCL:Vehicle:${operatorRef}:${vehicleId}:LOC`, {
 				position: {
 					latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
 					longitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Longitude,
@@ -140,8 +143,8 @@ async function updateEntities() {
 					scheduleRelationship: GtfsRealtime.transit_realtime.TripDescriptor.ScheduleRelationship.SCHEDULED,
 				},
 				vehicle: {
-					id: `${vehicleType}:${vehicleId}`,
-					label: `${vehicleType}:${vehicleId}`,
+					id: `${operatorRef}:${vehicleId}`,
+					label: `${operatorRef}:${vehicleId}`,
 				},
 			});
 		}
