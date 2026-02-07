@@ -12,6 +12,7 @@ import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
 import { operatorByLine } from "./utils/operator-by-line.js";
 import { parseSiriRef } from "./utils/parse-siri.js";
+import { match, P } from "ts-pattern";
 
 DraftLog(console);
 
@@ -130,6 +131,30 @@ async function updateEntities() {
 			}
 
 			vehiclePositions.set(`TCL:Vehicle:${operatorRef}:${vehicleId}:LOC`, {
+				occupancyStatus: match(vehicleActivity.MonitoredVehicleJourney.Occupancy)
+					.with("FULL", () => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.FULL)
+					.with(
+						"CRUSH_STANDING_ROOM_ONLY",
+						() => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.CRUSHED_STANDING_ROOM_ONLY,
+					)
+					.with(
+						"STANDING_ROOM_ONLY",
+						() => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.STANDING_ROOM_ONLY,
+					)
+					.with(
+						P.union("FEW_SEATS_AVAILABLE", "STANDING_AVAILABLE"),
+						() => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.FEW_SEATS_AVAILABLE,
+					)
+					.with(
+						P.union("SEATS_AVAILABLE", "MANY_SEATS_AVAILABLE"),
+						() => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.MANY_SEATS_AVAILABLE,
+					)
+					.with("EMPTY", () => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.EMPTY)
+					.with(
+						"NOT_ACCEPTING_PASSENGERS",
+						() => GtfsRealtime.transit_realtime.VehiclePosition.OccupancyStatus.NOT_ACCEPTING_PASSENGERS,
+					)
+					.otherwise(() => undefined),
 				position: {
 					latitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Latitude,
 					longitude: vehicleActivity.MonitoredVehicleJourney.VehicleLocation.Longitude,

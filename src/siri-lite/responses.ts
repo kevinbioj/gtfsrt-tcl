@@ -80,6 +80,7 @@ export type VehicleMonitoringResponse = {
 					Longitude: number;
 					Latitude: number;
 				};
+				Occupancy?: string;
 				Bearing: number;
 				VehicleRef: {
 					value: string;
