@@ -1,9 +1,9 @@
-import { API_AUTH, API_BASE } from "./constants.js";
+import { SIRI_LITE_API_KEY, SIRI_LITE_API_URL } from "../config.js";
 import type { Siri, VehicleMonitoringResponse } from "./responses.js";
 
 export async function fetchVehicleMonitoring() {
-	const response = await fetch(`${API_BASE}/vehicle-monitoring.json`, {
-		headers: { Authorization: `Basic ${API_AUTH}` },
+	const response = await fetch(`${SIRI_LITE_API_URL}/vehicle-monitoring.json`, {
+		headers: { Authorization: `Basic ${SIRI_LITE_API_KEY}` },
 	});
 
 	if (!response.ok) {

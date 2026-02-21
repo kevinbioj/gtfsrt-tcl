@@ -1,5 +1,5 @@
 {
-	"name": "gtfsrt-tcl",
+	"name": "@bus-tracker/gtfsrt-tcl",
 	"description": "GTFS-RT data producer for TCL (Lyon Métropole - SYTRAL)",
 	"version": "0.1.0",
 	"author": "Kevin BIOJOUT <biojoutk1106@gmail.com>",
@@ -13,19 +13,18 @@
 		"lint": "biome lint",
 		"start": "node --env-file .env dist/index.js"
 	},
-	"packageManager": "pnpm@10.29.3+sha512.498e1fb4cca5aa06c1dcf2611e6fafc50972ffe7189998c409e90de74566444298ffe43e6cd2acdc775ba1aa7cc5e092a8b7054c811ba8c5770f84693d33d2dc",
+	"packageManager": "pnpm@10.30.1+sha512.3590e550d5384caa39bd5c7c739f72270234b2f6059e13018f975c313b1eb9fefcc09714048765d4d9efe961382c312e624572c0420762bdc5d5940cdf9be73a",
 	"dependencies": {
 		"@hono/node-server": "^1.19.9",
-		"draftlog": "^1.0.13",
 		"gtfs-realtime-bindings": "^1.1.1",
-		"hono": "^4.11.9",
+		"hono": "^4.12.0",
 		"temporal-polyfill": "^0.3.0",
 		"ts-pattern": "^5.9.0",
 		"tsx": "^4.21.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.0",
-		"@types/node": "^25.2.3",
+		"@biomejs/biome": "2.4.4",
+		"@types/node": "^25.3.0",
 		"typescript": "^5.9.3"
 	}
 }

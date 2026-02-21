@@ -1,10 +1,13 @@
-FROM node:22.19.0-alpine AS base
-RUN corepack enable
+FROM node:25.6.1-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+WORKDIR /app
 
 # ---
 
 FROM base AS builder
-WORKDIR /app
+RUN npm install -g --force corepack@latest
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
@@ -16,11 +19,12 @@ RUN pnpm build
 # ---
 
 FROM base AS runtime
-WORKDIR /app
 ENV NODE_ENV=production
+
+RUN apk add --no-cache tini
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist/ ./dist
 
 EXPOSE 3000
-CMD ["node", "/app/dist/index.js"]
+CMD ["/sbin/tini", "--", "node", "/app/dist/index.js"]

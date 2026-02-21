@@ -1,47 +1,48 @@
+import { setTimeout } from "node:timers/promises";
 import { serve } from "@hono/node-server";
-import DraftLog from "draftlog";
 import GtfsRealtime from "gtfs-realtime-bindings";
 import { Hono } from "hono";
-import { stream } from "hono/streaming";
 import { Temporal } from "temporal-polyfill";
+import { match, P } from "ts-pattern";
 
-import { createFeed } from "./gtfs-rt/create-feed.js";
+import { PORT, REFRESH_INTERVAL } from "./config.js";
+import { handleRequest } from "./gtfs-rt/handle-request.js";
+import { useRealtimeStore } from "./gtfs-rt/use-realtime-store.js";
 import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
 import { operatorByLine } from "./utils/operator-by-line.js";
 import { parseSiriRef } from "./utils/parse-siri.js";
-import { match, P } from "ts-pattern";
 
-DraftLog(console);
+console.log(` ,----.,--------.,------.,---.        ,------.,--------. ,--------.,-----.,--.    
+'  .-./'--.  .--'|  .---'   .-',-----.|  .--. '--.  .--' '--.  .--'  .--./|  |    
+|  | .---.|  |   |  \`--,\`.  \`-.'-----'|  '--'.'  |  |       |  |  |  |    |  |    
+'  '--'  ||  |   |  |\`  .-'    |      |  |\\  \\   |  |       |  |  '  '--'\\|  '--. 
+ \`------' \`--'   \`--'   \`-----'       \`--' '--'  \`--'       \`--'   \`-----'\`-----'`);
 
-const tripUpdates = new Map<string, GtfsRealtime.transit_realtime.ITripUpdate>();
-const vehiclePositions = new Map<string, GtfsRealtime.transit_realtime.IVehiclePosition>();
-
-// ---
+const store = useRealtimeStore();
 
 const hono = new Hono();
-hono.get("/", async (c) => {
-	const feed = createFeed(tripUpdates, vehiclePositions);
-	if (c.req.query("format") === "json") return c.json(feed);
-
-	return stream(c, async (stream) => {
-		const encoded = GtfsRealtime.transit_realtime.FeedMessage.encode(feed).finish();
-		await stream.write(encoded);
-	});
-});
-
-const port = +(process.env.PORT ?? 3000);
-serve({ fetch: hono.fetch, port });
-console.log(`Listening on ${port}`);
+hono.get("/trip-updates", (c) => handleRequest(c, "protobuf", store.tripUpdates, null));
+hono.get("/trip-updates.json", (c) => handleRequest(c, "json", store.tripUpdates, null));
+hono.get("/vehicle-positions", (c) => handleRequest(c, "protobuf", null, store.vehiclePositions));
+hono.get("/vehicle-positions.json", (c) => handleRequest(c, "json", null, store.vehiclePositions));
+hono.get("/", (c) =>
+	handleRequest(c, c.req.query("format") === "json" ? "json" : "protobuf", store.tripUpdates, store.vehiclePositions),
+);
+serve({ fetch: hono.fetch, port: PORT });
+console.log(`|> Listening on :${PORT}`);
 
 // ---
 
-async function updateEntities() {
-	const log = console.draft("> Updating entities...");
+while (true) {
+	console.log("|> Updating entities");
+	const startedAt = Date.now();
+	let error: unknown | undefined;
 
 	try {
+		console.log("		◘ Fetching estimated timetable");
 		const estimatedTimetable = await fetchEstimatedTimetable();
 
 		const timetableVehicleJourneys = estimatedTimetable.Siri.ServiceDelivery.EstimatedTimetableDelivery.flatMap(
@@ -50,6 +51,7 @@ async function updateEntities() {
 
 		const firstCallByJourney = new Map<string, { Order: number; StopPointRef?: string }>();
 
+		console.log("			• Computing trip updates");
 		for (const vehicleJourney of timetableVehicleJourneys) {
 			const tripId = extractTripId(vehicleJourney.FramedVehicleJourneyRef.DatedVehicleJourneyRef);
 
@@ -101,7 +103,7 @@ async function updateEntities() {
 				},
 			);
 
-			tripUpdates.set(`TCL:VehicleJourney::${tripId}:LOC`, {
+			store.tripUpdates.set(`TCL:VehicleJourney::${tripId}:LOC`, {
 				stopTimeUpdate: stopTimeUpdates,
 				timestamp: Math.floor(Temporal.Instant.from(vehicleJourney.RecordedAtTime).epochMilliseconds / 1000),
 				trip: {
@@ -120,13 +122,18 @@ async function updateEntities() {
 				});
 			}
 		}
+		console.log(`			✓ Processed ${timetableVehicleJourneys.length} trip updates`);
 
+		// ---
+
+		console.log("		◘ Fetching vehicle monitoring");
 		const vehicleMonitoring = await fetchVehicleMonitoring();
 
 		const vehicleActivities = vehicleMonitoring.Siri.ServiceDelivery.VehicleMonitoringDelivery.flatMap(
 			({ VehicleActivity }) => VehicleActivity ?? [],
 		);
 
+		console.log("			• Computing vehicle positions");
 		for (const vehicleActivity of vehicleActivities) {
 			const routeId = parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value);
 			const [, , , vehicleId] = vehicleActivity.VehicleMonitoringRef.value.split(":");
@@ -162,7 +169,7 @@ async function updateEntities() {
 					: firstJourneyCall.StopPointRef;
 			}
 
-			vehiclePositions.set(`TCL:Vehicle:${operatorRef}:${vehicleId}:LOC`, {
+			store.vehiclePositions.set(`TCL:Vehicle:${operatorRef}:${vehicleId}:LOC`, {
 				currentStatus,
 				currentStopSequence,
 				occupancyStatus: match(vehicleActivity.MonitoredVehicleJourney.Occupancy)
@@ -208,22 +215,19 @@ async function updateEntities() {
 				},
 			});
 		}
+		console.log(`			✓ Processed ${vehicleActivities.length} vehicle positions`);
+	} catch (cause) {
+		error = cause;
+	} finally {
+		const duration = Date.now() - startedAt;
+		const waitingTime = REFRESH_INTERVAL - duration;
 
-		log("v Done updating entities!");
-	} catch (e) {
-		log("x Failed to update entities", e);
-	}
+		if (error === undefined) {
+			console.log(`✓ Done updating in ${duration}ms, waiting for ${waitingTime}ms.`);
+		} else {
+			console.error(`✘ Unable to update entities, retrying in ${waitingTime}ms.`, error);
+		}
 
-	for (const [key, tripUpdate] of tripUpdates) {
-		const now = Math.floor(Date.now() / 1000);
-		if (now - (tripUpdate.timestamp as number) > 3600) tripUpdates.delete(key);
-	}
-
-	for (const [key, vehiclePosition] of vehiclePositions) {
-		const now = Math.floor(Date.now() / 1000);
-		if (now - (vehiclePosition.timestamp as number) > 3600) vehiclePositions.delete(key);
+		await setTimeout(waitingTime);
 	}
 }
-
-await updateEntities();
-setInterval(updateEntities, 30_000);
