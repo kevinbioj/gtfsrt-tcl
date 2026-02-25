@@ -1,15 +1,21 @@
 FROM node:25.7.0-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 WORKDIR /app
 
 # ---
 
-FROM base AS builder
+FROM base AS dependencies_base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
 RUN npm install -g --force corepack@latest
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# ---
+
+FROM dependencies_base AS builder
+
 RUN pnpm install --frozen-lockfile
 
 COPY ./src/ ./
@@ -18,12 +24,18 @@ RUN pnpm build
 
 # ---
 
+FROM dependencies_base AS production_dependencies
+
+RUN pnpm install --frozen-lockfile --prod
+
+# ---
+
 FROM base AS runtime
 ENV NODE_ENV=production
 
 RUN apk add --no-cache tini
 
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=production_dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/dist/ ./dist
 
 EXPOSE 3000
