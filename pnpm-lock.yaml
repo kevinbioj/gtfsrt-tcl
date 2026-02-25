@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.19.9
-        version: 1.19.9(hono@4.12.0)
+        version: 1.19.9(hono@4.12.2)
       gtfs-realtime-bindings:
         specifier: ^1.1.1
         version: 1.1.1
       hono:
-        specifier: ^4.12.0
-        version: 4.12.0
+        specifier: ^4.12.2
+        version: 4.12.2
       temporal-polyfill:
         specifier: ^0.3.0
         version: 0.3.0
@@ -275,8 +275,8 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@jsdoc/salty@0.2.9':
-    resolution: {integrity: sha512-yYxMVH7Dqw6nO0d5NIV8OQWnitU8k6vXH8NtgqAfIa/IUqRMxRv/NUJJ08VEKbAakwxlgBl5PJdrU0dMPStsnw==}
+  '@jsdoc/salty@0.2.10':
+    resolution: {integrity: sha512-VFHSsQAQp8y1NJvAJBpLs9I2shHE6hz9TwukocDObuUgGVAq62yZGbTgJg04Z3Fj0XSMWe0sJqGg5dhKGTV92A==}
     engines: {node: '>=v12.0.0'}
 
   '@protobufjs/aspromise@1.1.2':
@@ -437,8 +437,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hono@4.12.0:
-    resolution: {integrity: sha512-NekXntS5M94pUfiVZ8oXXK/kkri+5WpX2/Ik+LVsl+uvw+soj4roXIsPqO+XsWrAw20mOzaXOZf3Q7PfB9A/IA==}
+  hono@4.12.2:
+    resolution: {integrity: sha512-gJnaDHXKDayjt8ue0n8Gs0A007yKXj4Xzb8+cNjZeYsSzzwKc0Lr+OZgYwVfB0pHfUs17EPoLvrOsEaJ9mj+Tg==}
     engines: {node: '>=16.9.0'}
 
   inflight@1.0.6:
@@ -490,8 +490,8 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  minimatch@5.1.6:
-    resolution: {integrity: sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==}
+  minimatch@5.1.9:
+    resolution: {integrity: sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw==}
     engines: {node: '>=10'}
 
   minimist@1.2.8:
@@ -730,11 +730,11 @@ snapshots:
   '@esbuild/win32-x64@0.27.3':
     optional: true
 
-  '@hono/node-server@1.19.9(hono@4.12.0)':
+  '@hono/node-server@1.19.9(hono@4.12.2)':
     dependencies:
-      hono: 4.12.0
+      hono: 4.12.2
 
-  '@jsdoc/salty@0.2.9':
+  '@jsdoc/salty@0.2.10':
     dependencies:
       lodash: 4.17.23
 
@@ -885,7 +885,7 @@ snapshots:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 5.1.6
+      minimatch: 5.1.9
       once: 1.4.0
 
   graceful-fs@4.2.11: {}
@@ -897,7 +897,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hono@4.12.0: {}
+  hono@4.12.2: {}
 
   inflight@1.0.6:
     dependencies:
@@ -913,7 +913,7 @@ snapshots:
   jsdoc@4.0.5:
     dependencies:
       '@babel/parser': 7.29.0
-      '@jsdoc/salty': 0.2.9
+      '@jsdoc/salty': 0.2.10
       '@types/markdown-it': 14.1.2
       bluebird: 3.7.2
       catharsis: 0.9.0
@@ -963,7 +963,7 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  minimatch@5.1.6:
+  minimatch@5.1.9:
     dependencies:
       brace-expansion: 2.0.2
 
