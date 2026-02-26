@@ -220,7 +220,7 @@ while (true) {
 		error = cause;
 	} finally {
 		const duration = Date.now() - startedAt;
-		const waitingTime = REFRESH_INTERVAL - duration;
+		const waitingTime = Math.max(REFRESH_INTERVAL - duration, 5000);
 
 		if (error === undefined) {
 			console.log(`✓ Done updating in ${duration}ms, waiting for ${waitingTime}ms.`);

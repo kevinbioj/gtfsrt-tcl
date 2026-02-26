@@ -7,7 +7,7 @@ export async function fetchEstimatedTimetable() {
 	});
 
 	if (!response.ok) {
-		throw new Error("Unable to fetch estimated timetables");
+		throw new Error(`Unable to fetch estimated timetables (http status ${response.status}).`);
 	}
 
 	const payload = (await response.json()) as Siri<EstimatedTimetableResponse>;

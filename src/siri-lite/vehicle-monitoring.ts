@@ -7,7 +7,7 @@ export async function fetchVehicleMonitoring() {
 	});
 
 	if (!response.ok) {
-		throw new Error("Unable to fetch vehicle monitoring");
+		throw new Error(`Unable to fetch vehicle monitoring (http status ${response.status}).`);
 	}
 
 	const payload = (await response.json()) as Siri<VehicleMonitoringResponse>;
