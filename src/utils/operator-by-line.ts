@@ -1,4 +1,4 @@
-export const operatorByLine: Record<string, string> = {
+const operatorByLine: Record<string, string> = {
 	// MÉTRO,
 	A: "RD_LYON",
 	B: "RD_LYON",
@@ -205,7 +205,7 @@ export const operatorByLine: Record<string, string> = {
 	"231": "KEOLIS_AUTOCARS_PLANCHE",
 	"235": "MAISAVIA",
 	"236": "TRANSDEV_RHONE_ALPES",
-	"237": "TRANSDEV_RHONE_ALPES",
+	// "237": "TRANSDEV_RHONE_ALPES", // cas spécial
 	"238": "MAISAVIA",
 	"239": "TRANSDEV_RHONE_ALPES",
 	"240": "KEOLIS_AUTOCARS_PLANCHE",
@@ -241,3 +241,15 @@ export const operatorByLine: Record<string, string> = {
 	BGS4: "KEOLIS_LYON",
 	BGS5: "KEOLIS_LYON",
 };
+
+export function getOperatorByLine(lineNumber: string, vehicleRef: string) {
+	if (lineNumber === "237") {
+		if (/^(1|2)\d{5}/.test(vehicleRef)) {
+			return "KEOLIS_AUTOCARS_PLANCHE";
+		}
+
+		return "TRANSDEV_RHONE_ALPES";
+	}
+
+	return operatorByLine[lineNumber];
+}

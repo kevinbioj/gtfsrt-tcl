@@ -12,7 +12,7 @@ import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
-import { operatorByLine } from "./utils/operator-by-line.js";
+import { getOperatorByLine } from "./utils/operator-by-line.js";
 import { parseSiriRef } from "./utils/parse-siri.js";
 
 console.log(` ,----.,--------.,------.,---.        ,------.,--------. ,--------.,-----.,--.    
@@ -137,13 +137,16 @@ while (true) {
 		for (const vehicleActivity of vehicleActivities) {
 			const routeId = parseSiriRef(vehicleActivity.MonitoredVehicleJourney.LineRef.value);
 			const [, , , vehicleId] = vehicleActivity.VehicleMonitoringRef.value.split(":");
+			if (vehicleId === undefined) {
+				continue;
+			}
 
 			let operatorRef = "INCONNU";
 
 			if (routeId !== undefined) {
 				const routeNumber = lineIdToNumber[routeId];
 				if (routeNumber !== undefined) {
-					operatorRef = operatorByLine[routeNumber] ?? "INCONNU";
+					operatorRef = getOperatorByLine(routeNumber, vehicleId) ?? "INCONNU";
 				}
 			}
 
