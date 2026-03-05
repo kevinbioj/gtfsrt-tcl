@@ -24,13 +24,11 @@ console.log(` ,----.,--------.,------.,---.        ,------.,--------. ,--------.
 const store = useRealtimeStore();
 
 const hono = new Hono();
-hono.get("/trip-updates", (c) => handleRequest(c, "protobuf", store.tripUpdates, null));
-hono.get("/trip-updates.json", (c) => handleRequest(c, "json", store.tripUpdates, null));
-hono.get("/vehicle-positions", (c) => handleRequest(c, "protobuf", null, store.vehiclePositions));
-hono.get("/vehicle-positions.json", (c) => handleRequest(c, "json", null, store.vehiclePositions));
-hono.get("/", (c) =>
-	handleRequest(c, c.req.query("format") === "json" ? "json" : "protobuf", store.tripUpdates, store.vehiclePositions),
-);
+hono.get("/trip-updates", (c) => handleRequest(c, "protobuf", store.feeds.tripUpdates));
+hono.get("/trip-updates.json", (c) => handleRequest(c, "json", store.feeds.tripUpdates));
+hono.get("/vehicle-positions", (c) => handleRequest(c, "protobuf", store.feeds.vehiclePositions));
+hono.get("/vehicle-positions.json", (c) => handleRequest(c, "json", store.feeds.vehiclePositions));
+hono.get("/", (c) => handleRequest(c, c.req.query("format") === "json" ? "json" : "protobuf", store.feeds.global));
 serve({ fetch: hono.fetch, port: PORT });
 console.log(`|> Listening on :${PORT}`);
 
@@ -218,6 +216,8 @@ while (true) {
 				},
 			});
 		}
+
+		store.flush();
 		console.log(`			✓ Processed ${vehicleActivities.length} vehicle positions`);
 	} catch (cause) {
 		error = cause;

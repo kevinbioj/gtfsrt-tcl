@@ -2,13 +2,26 @@ import type GtfsRealtime from "gtfs-realtime-bindings";
 import { Temporal } from "temporal-polyfill";
 
 import { SWEEP_THRESHOLD } from "../config.js";
+import { createFeed } from "./create-feed.js";
 
 let currentInterval: NodeJS.Timeout | undefined;
 
 export function useRealtimeStore() {
+	const feeds = {
+		global: createFeed(null, null),
+		tripUpdates: createFeed(null, null),
+		vehiclePositions: createFeed(null, null),
+	};
+
 	const store = {
 		tripUpdates: new Map<string, GtfsRealtime.transit_realtime.ITripUpdate>(),
 		vehiclePositions: new Map<string, GtfsRealtime.transit_realtime.IVehiclePosition>(),
+		feeds,
+		flush: () => {
+			feeds.global = createFeed(store.tripUpdates, store.vehiclePositions);
+			feeds.tripUpdates = createFeed(store.tripUpdates, null);
+			feeds.vehiclePositions = createFeed(null, store.vehiclePositions);
+		},
 	};
 
 	if (currentInterval !== undefined) {
@@ -50,6 +63,8 @@ export function useRealtimeStore() {
 				store.vehiclePositions.delete(id);
 			}
 		}
+
+		store.flush();
 	}, SWEEP_THRESHOLD);
 
 	return store;
