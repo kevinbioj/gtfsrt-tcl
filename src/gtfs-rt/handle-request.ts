@@ -1,14 +1,10 @@
-import GtfsRealtime from "gtfs-realtime-bindings";
 import type { Context } from "hono";
 import { stream } from "hono/streaming";
+import type { FeedData } from "../types.js";
 
-export function handleRequest(
-	c: Context,
-	output: "protobuf" | "json",
-	feed: GtfsRealtime.transit_realtime.FeedMessage,
-) {
-	if (typeof feed.header.timestamp === "number") {
-		const lastModified = new Date(feed.header.timestamp * 1000);
+export function handleRequest(c: Context, output: "protobuf" | "json", data: FeedData) {
+	if (typeof data.timestamp === "number") {
+		const lastModified = new Date(data.timestamp * 1000);
 		c.res.headers.set("Last-Modified", lastModified.toUTCString());
 
 		const ifModifiedSince = c.req.header("If-Modified-Since");
@@ -18,11 +14,10 @@ export function handleRequest(
 	}
 
 	if (output === "json") {
-		return c.json(feed, 200);
+		return c.json(data.json, 200);
 	}
 
 	return stream(c, async (stream) => {
-		const encoded = GtfsRealtime.transit_realtime.FeedMessage.encode(feed).finish();
-		await stream.write(encoded);
+		await stream.write(data.pb);
 	});
 }
