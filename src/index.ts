@@ -1,6 +1,7 @@
 import { Worker } from "node:worker_threads";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { rateLimiter } from "hono-rate-limiter";
 
 import { PORT } from "./config.js";
 import { handleRequest } from "./gtfs-rt/handle-request.js";
@@ -54,6 +55,14 @@ function startWorker() {
 startWorker();
 
 const hono = new Hono();
+hono.use(
+	rateLimiter({
+		windowMs: 10_000,
+		limit: 1,
+		keyGenerator: (c) => `${c.req.header("CF-Connecting-IP")}_${c.req.method}_${c.req.path}`,
+		handler: (c) => c.json({ code: 429, message: "Too many requests, please try again later." }, 429),
+	}),
+);
 hono.get("/trip-updates", (c) => handleRequest(c, "protobuf", latestFeeds.tripUpdates));
 hono.get("/trip-updates.json", (c) => handleRequest(c, "json", latestFeeds.tripUpdates));
 hono.get("/vehicle-positions", (c) => handleRequest(c, "protobuf", latestFeeds.vehiclePositions));
