@@ -4,7 +4,7 @@ import { Hono } from "hono";
 
 import { PORT } from "./config.js";
 import { handleRequest } from "./gtfs-rt/handle-request.js";
-import type { WorkerMessage, FeedData } from "./types.js";
+import type { FeedData, WorkerMessage } from "./types.js";
 
 console.log(` ,----.,--------.,------.,---.        ,------.,--------. ,--------.,-----.,--.    
 '  .-./'--.  .--'|  .---'   .-',-----.|  .--. '--.  .--' '--.  .--'  .--./|  |    

@@ -1,4 +1,4 @@
-FROM node:25.7.0-alpine AS base
+FROM node:25.9.0-alpine AS base
 WORKDIR /app
 
 # ---
@@ -18,7 +18,7 @@ FROM dependencies_base AS builder
 
 RUN pnpm install --frozen-lockfile
 
-COPY ./src/ ./
+COPY ./src/ ./src/
 COPY tsconfig.json ./
 RUN pnpm build
 

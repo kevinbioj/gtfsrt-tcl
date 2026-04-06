@@ -12,8 +12,10 @@
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
 		"module": "NodeNext",
+		"rootDir": "src",
 		"outDir": "dist",
-		"lib": ["ESNext"]
+		"lib": ["ESNext"],
+		"types": ["node"]
 	},
 	"include": ["**/*.ts", "**/*.tsx"],
 	"exclude": ["node_modules"]
