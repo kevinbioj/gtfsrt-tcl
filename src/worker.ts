@@ -1,18 +1,17 @@
-import { parentPort } from "node:worker_threads";
 import { setTimeout } from "node:timers/promises";
+import { parentPort } from "node:worker_threads";
 import GtfsRealtime from "gtfs-realtime-bindings";
-import { Temporal } from "temporal-polyfill";
 import { match, P } from "ts-pattern";
 
 import { REFRESH_INTERVAL } from "./config.js";
 import { useRealtimeStore } from "./gtfs-rt/use-realtime-store.js";
 import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
+import type { FeedData, WorkerMessage } from "./types.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
 import { getOperatorByLine } from "./utils/operator-by-line.js";
 import { parseSiriRef } from "./utils/parse-siri.js";
-import type { WorkerMessage, FeedData } from "./types.js";
 
 const store = useRealtimeStore();
 

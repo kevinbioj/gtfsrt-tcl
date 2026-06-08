@@ -1,5 +1,3 @@
-import { Temporal } from "temporal-polyfill";
-
 if (process.env.API_CREDENTIALS === undefined) {
 	throw new Error("Environment variable 'API_CREDENTIALS' must be set!");
 }

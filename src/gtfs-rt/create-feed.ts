@@ -1,5 +1,4 @@
 import GtfsRealtime from "gtfs-realtime-bindings";
-import { Temporal } from "temporal-polyfill";
 
 export function createFeed(
 	tripUpdates: Map<string, GtfsRealtime.transit_realtime.ITripUpdate> | null,

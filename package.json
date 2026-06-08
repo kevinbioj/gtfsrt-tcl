@@ -9,23 +9,22 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsx --env-file .env src/index.ts",
-		"format": "biome format --write",
-		"lint": "biome lint",
-		"start": "node --env-file .env dist/index.js"
+		"start": "node --env-file .env dist/index.js",
+		"check": "biome check",
+		"check:fix": "biome check --fix"
 	},
-	"packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
-	"dependencies": {
-		"@hono/node-server": "^1.19.9",
-		"gtfs-realtime-bindings": "^1.1.1",
-		"hono": "^4.12.2",
-		"hono-rate-limiter": "^0.5.3",
-		"temporal-polyfill": "^0.3.0",
-		"ts-pattern": "^5.9.0",
-		"tsx": "^4.21.0"
-	},
+	"packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
 	"devDependencies": {
-		"@biomejs/biome": "2.4.4",
-		"@types/node": "^25.3.0",
-		"typescript": "^5.9.3"
+		"@biomejs/biome": "2.4.16",
+		"@types/node": "^25.9.2",
+		"typescript": "^6.0.3"
+	},
+	"dependencies": {
+		"@hono/node-server": "^2.0.4",
+		"gtfs-realtime-bindings": "^2.0.0",
+		"hono": "^4.12.23",
+		"hono-rate-limiter": "^0.5.3",
+		"ts-pattern": "^5.9.0",
+		"tsx": "^4.22.4"
 	}
 }

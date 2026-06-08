@@ -1,5 +1,4 @@
 import type GtfsRealtime from "gtfs-realtime-bindings";
-import { Temporal } from "temporal-polyfill";
 
 import { SWEEP_THRESHOLD } from "../config.js";
 import { createFeed } from "./create-feed.js";
