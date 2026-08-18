@@ -13,18 +13,18 @@
 		"check": "biome check",
 		"check:fix": "biome check --fix"
 	},
-	"packageManager": "pnpm@11.5.2+sha512.71c631e382066efc25625d5cf029075de07b61b37f6e27350fbd84b1bda5864c8c1967adc280776b45c30a715c0359a3be08fef42d5bb09e2b99029979692916",
+	"packageManager": "pnpm@11.22.0+sha512.1ff870c4c6133dfd88fb2afc46dd13d47f09c9794b438c6fdb47ca98caf3bc16381ee0be93a091b8e3824cf01f889f46d7d9e20910fb0be1ab0fb5baa80dd621",
 	"devDependencies": {
-		"@biomejs/biome": "2.4.16",
-		"@types/node": "^25.9.2",
-		"typescript": "^6.0.3"
+		"@biomejs/biome": "2.5.8",
+		"@types/node": "^26.2.0",
+		"typescript": "^7.0.2"
 	},
 	"dependencies": {
-		"@hono/node-server": "^2.0.4",
-		"gtfs-realtime-bindings": "^2.0.0",
-		"hono": "^4.12.23",
+		"@hono/node-server": "^2.1.1",
+		"gtfs-realtime-bindings": "^2.2.0",
+		"hono": "^4.13.2",
 		"hono-rate-limiter": "^0.5.3",
 		"ts-pattern": "^5.9.0",
-		"tsx": "^4.22.4"
+		"tsx": "^4.23.12"
 	}
 }
