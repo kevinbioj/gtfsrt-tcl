@@ -22,29 +22,29 @@ const operatorByLine: Record<string, string> = {
 	// CHRONO
 	C1: "KEOLIS_LYON",
 	C2: "KEOLIS_LYON",
-	C3: "KEOLIS_LYON",
+	C27: "KEOLIS_LYON", // ex-C3
 	C4: "KEOLIS_LYON",
 	C5: "KEOLIS_LYON",
 	C6: "KEOLIS_LYON",
-	C7: "KEOLIS_LYON",
+	"36": "KEOLIS_LYON", // ex-C7
 	C8: "KEOLIS_LYON",
 	C9: "KEOLIS_LYON",
 	C10: "KEOLIS_LYON",
-	C11: "KEOLIS_LYON",
+	// C27 : déjà défini ci-dessus (fusion C11 + autre ligne)
 	C12: "KEOLIS_LYON",
 	C13: "KEOLIS_LYON",
 	C14: "KEOLIS_LYON",
 	C15: "KEOLIS_LYON",
-	C15E: "KEOLIS_LYON",
+	// "32": "KEOLIS_LYON", // ex-C15E — à décommenter le 31/08/2026 (collision avec la 32 actuelle)
 	C16: "KEOLIS_LYON",
 	C17: "KEOLIS_LYON",
 	C18: "KEOLIS_LYON",
-	C19: "KEOLIS_LYON",
+	"41": "KEOLIS_LYON", // ex-C19
 	C20: "KEOLIS_LYON",
-	C20E: "KEOLIS_LYON",
+	C20EX: "KEOLIS_LYON", // ex-C20E
 	C21: "KEOLIS_LYON",
 	C22: "KEOLIS_LYON",
-	C22E: "KEOLIS_LYON",
+	C22EX: "KEOLIS_LYON", // ex-C22E
 	C23: "KEOLIS_LYON",
 	C24: "KEOLIS_LYON",
 	C25: "KEOLIS_LYON",
@@ -54,36 +54,36 @@ const operatorByLine: Record<string, string> = {
 	C202: "KEOLIS_AUTOCARS_PLANCHE",
 	C205: "TRANSDEV_RHONE_ALPES",
 	// BUS URBAIN
-	"2": "KEOLIS_LYON",
-	"3": "KEOLIS_LYON",
-	"5": "KEOLIS_LYON",
-	"6": "COURRIERS_RHODANIENS",
-	"6E": "KEOLIS_LYON",
-	"7": "KEOLIS_LYON",
-	"8": "KEOLIS_LYON",
-	"9": "KEOLIS_LYON",
-	"10": "KEOLIS_LYON",
-	"10E": "KEOLIS_LYON",
-	"11": "KEOLIS_AUTOCARS_PLANCHE",
-	"12": "KEOLIS_AUTOCARS_PLANCHE",
-	"14": "KEOLIS_LYON",
-	"15": "KEOLIS_LYON",
-	"15E": "KEOLIS_LYON",
-	"16": "KEOLIS_LYON",
-	"17": "KEOLIS_LYON",
-	"18": "KEOLIS_LYON",
-	"19": "KEOLIS_LYON",
-	"20": "KEOLIS_LYON",
-	"21": "KEOLIS_LYON",
-	"22": "KEOLIS_LYON",
-	"23": "PHILIBERT_TRANSPORT",
-	"24": "KEOLIS_LYON",
-	"25": "KEOLIS_LYON",
-	"26": "KEOLIS_LYON",
-	"27": "KEOLIS_LYON",
-	"30": "COURRIERS_RHODANIENS",
+	"102": "KEOLIS_LYON", // ex-2
+	"103": "KEOLIS_LYON", // ex-3
+	"105": "KEOLIS_LYON", // ex-5
+	"106": "COURRIERS_RHODANIENS", // ex-6
+	"106EX": "KEOLIS_LYON", // ex-6E
+	"107": "KEOLIS_LYON", // ex-7
+	"108": "KEOLIS_LYON", // ex-8
+	"109": "KEOLIS_LYON", // ex-9
+	"110": "KEOLIS_LYON", // ex-10
+	"110EX": "KEOLIS_LYON", // ex-10E
+	"111": "KEOLIS_AUTOCARS_PLANCHE", // ex-11
+	"112": "KEOLIS_AUTOCARS_PLANCHE", // ex-12
+	"114": "KEOLIS_LYON", // ex-14
+	"115": "KEOLIS_LYON", // ex-15
+	"99EX": "KEOLIS_LYON", // ex-15E
+	"116": "KEOLIS_LYON", // ex-16
+	"117": "KEOLIS_LYON", // ex-17
+	"118": "KEOLIS_LYON", // ex-18
+	"119": "KEOLIS_LYON", // ex-19
+	"120": "KEOLIS_LYON", // ex-20
+	"121": "KEOLIS_LYON", // ex-21
+	"122": "KEOLIS_LYON", // ex-22
+	"123": "PHILIBERT_TRANSPORT", // ex-23
+	"124": "KEOLIS_LYON", // ex-24
+	"125": "KEOLIS_LYON", // ex-25
+	"126": "KEOLIS_LYON", // ex-26
+	"127": "KEOLIS_LYON", // ex-27
+	"230": "COURRIERS_RHODANIENS", // ex-30
 	"31": "KEOLIS_LYON",
-	"32": "COURRIERS_RHODANIENS",
+	"232": "COURRIERS_RHODANIENS", // ex-32
 	"33": "KEOLIS_LYON",
 	"34": "KEOLIS_LYON",
 	"35": "KEOLIS_LYON",
@@ -94,11 +94,11 @@ const operatorByLine: Record<string, string> = {
 	"43": "KEOLIS_LYON",
 	"45": "KEOLIS_LYON",
 	"46": "KEOLIS_LYON",
-	"47": "COURRIERS_RHODANIENS",
+	"248": "COURRIERS_RHODANIENS", // ex-47
 	"49": "KEOLIS_LYON",
 	"50": "KEOLIS_LYON",
 	"52": "KEOLIS_LYON",
-	"52E": "KEOLIS_LYON",
+	"52EX": "KEOLIS_LYON", // ex-52E
 	"54": "KEOLIS_LYON",
 	"55": "KEOLIS_LYON",
 	"57": "KEOLIS_LYON",
@@ -129,49 +129,49 @@ const operatorByLine: Record<string, string> = {
 	"87": "KEOLIS_LYON",
 	"88": "KEOLIS_LYON",
 	"89": "KEOLIS_LYON",
-	"89D": "KEOLIS_LYON",
+	"89EX": "KEOLIS_LYON", // ex-89D
 	"90": "KEOLIS_LYON",
 	"93": "KEOLIS_LYON",
 	"95": "KEOLIS_LYON",
 	"96": "TRANSDEV_RHONE_ALPES",
 	"97": "TRANSDEV_RHONE_ALPES",
 	"98": "KEOLIS_LYON",
-	"98E": "KEOLIS_LYON",
+	"98EX": "KEOLIS_LYON", // ex-98E
 	"128": "COURRIERS_RHODANIENS",
 	// SOYEUSES
-	S1: "KEOLIS_LYON",
-	S2: "TRANSDEV_RHONE_ALPES",
-	S3: "CARS_FAURE",
-	S4A: "KEOLIS_LYON",
-	S4B: "KEOLIS_LYON",
-	S5: "KEOLIS_AUTOCARS_PLANCHE",
-	S6: "KEOLIS_LYON",
-	S7: "PHILIBERT_TRANSPORT",
-	S8: "KEOLIS_AUTOCARS_PLANCHE",
-	S9: "KEOLIS_LYON",
-	S10: "PHILIBERT_TRANSPORT",
-	S11: "KEOLIS_LYON",
-	S14: "TRANSDEV_RHONE_ALPES",
-	S15: "KEOLIS_LYON",
+	"133": "KEOLIS_LYON", // ex-S1
+	"138": "TRANSDEV_RHONE_ALPES", // ex-S2
+	"139": "CARS_FAURE", // ex-S3
+	"104A": "KEOLIS_LYON", // ex-S4A
+	"104B": "KEOLIS_LYON", // ex-S4B
+	"140": "KEOLIS_AUTOCARS_PLANCHE", // ex-S5
+	"141": "KEOLIS_LYON", // ex-S6
+	"142": "PHILIBERT_TRANSPORT", // ex-S7
+	"143": "KEOLIS_AUTOCARS_PLANCHE", // ex-S8
+	"144": "KEOLIS_LYON", // ex-S9
+	"134": "PHILIBERT_TRANSPORT", // ex-S10
+	"135": "KEOLIS_LYON", // ex-S11
+	"136": "TRANSDEV_RHONE_ALPES", // ex-S14
+	"137": "KEOLIS_LYON", // ex-S15
 	// ZONES INDUS
-	ZI1: "KEOLIS_LYON",
-	ZI2: "KEOLIS_LYON",
-	ZI3: "KEOLIS_LYON",
-	ZI4: "KEOLIS_LYON",
-	ZI5: "COURRIERS_RHODANIENS",
-	ZI8: "KEOLIS_LYON",
+	"145": "KEOLIS_LYON", // ex-ZI1
+	"146": "KEOLIS_LYON", // ex-ZI2
+	"147": "KEOLIS_LYON", // ex-ZI3
+	"148": "KEOLIS_LYON", // ex-ZI4
+	"149": "COURRIERS_RHODANIENS", // ex-ZI5
+	"150": "KEOLIS_LYON", // ex-ZI8
 	// NAVETTES
-	N20: "TRANSDEV_RHONE_ALPES",
-	N80: "KEOLIS_LYON",
-	N81: "CARS_FAURE",
-	N82: "MAISAVIA",
-	N83: "KEOLIS_LYON",
-	N84: "PHILIBERT_TRANSPORT",
-	N100: "KEOLIS_LYON",
+	N185: "TRANSDEV_RHONE_ALPES", // ex-N20
+	N180: "KEOLIS_LYON", // ex-N80
+	N181: "CARS_FAURE", // ex-N81
+	N182: "MAISAVIA", // ex-N82
+	N183: "KEOLIS_LYON", // ex-N83
+	N184: "PHILIBERT_TRANSPORT", // ex-N84
+	N186: "KEOLIS_LYON", // ex-N100
 	// GARE-EXPRESS
-	GE2: "CARS_FAURE",
-	GE4: "TRANSDEV_RHONE_ALPES",
-	GE6: "TRANSDEV_RHONE_ALPES",
+	"130": "CARS_FAURE", // ex-GE2
+	"131": "TRANSDEV_RHONE_ALPES", // ex-GE4
+	"132": "TRANSDEV_RHONE_ALPES", // ex-GE6
 	// PLEINE-LUNE
 	PL1: "KEOLIS_LYON",
 	PL2: "KEOLIS_LYON",
@@ -189,8 +189,8 @@ const operatorByLine: Record<string, string> = {
 	"164": "TRANSDEV_RHONE_ALPES",
 	"165": "TRANSDEV_RHONE_ALPES",
 	// INTERURBAIN
-	"203": "MAISAVIA",
-	"204": "KEOLIS_AUTOCARS_PLANCHE",
+	C203: "MAISAVIA", // ex-203
+	C204: "KEOLIS_AUTOCARS_PLANCHE", // ex-204
 	"211": "TRANSDEV_RHONE_ALPES",
 	"212": "CARS_FAURE",
 	"213": "TRANSDEV_RHONE_ALPES",
@@ -235,11 +235,90 @@ const operatorByLine: Record<string, string> = {
 	BRT6: "KEOLIS_LYON",
 	BRT7: "KEOLIS_LYON",
 	// ÉVÉNEMENT
-	BGS1: "KEOLIS_LYON",
-	BGS2: "KEOLIS_LYON",
+	N195: "KEOLIS_LYON", // ex-BGS1
+	N196: "KEOLIS_LYON", // ex-BGS2
 	BGS3: "KEOLIS_LYON",
-	BGS4: "KEOLIS_LYON",
+	N197: "KEOLIS_LYON", // ex-BGS4
 	BGS5: "KEOLIS_LYON",
+
+	// ─────────────────────────────────────────────────────────
+	// À SUPPRIMER APRÈS LUNDI 31 AOÛT 2026 (anciens numéros)
+	// ─────────────────────────────────────────────────────────
+	C3: "KEOLIS_LYON", // devient C27
+	C7: "KEOLIS_LYON", // devient 36
+	C11: "KEOLIS_LYON", // devient C27
+	C15E: "KEOLIS_LYON", // devient 32
+	C19: "KEOLIS_LYON", // devient 41
+	C20E: "KEOLIS_LYON", // devient C20EX
+	C22E: "KEOLIS_LYON", // devient C22EX
+	"2": "KEOLIS_LYON", // devient 102
+	"3": "KEOLIS_LYON", // devient 103
+	"5": "KEOLIS_LYON", // devient 105
+	"6": "COURRIERS_RHODANIENS", // devient 106
+	"6E": "KEOLIS_LYON", // devient 106EX
+	"7": "KEOLIS_LYON", // devient 107
+	"8": "KEOLIS_LYON", // devient 108
+	"9": "KEOLIS_LYON", // devient 109
+	"10": "KEOLIS_LYON", // devient 110
+	"10E": "KEOLIS_LYON", // devient 110EX
+	"11": "KEOLIS_AUTOCARS_PLANCHE", // devient 111
+	"12": "KEOLIS_AUTOCARS_PLANCHE", // devient 112
+	"14": "KEOLIS_LYON", // devient 114
+	"15": "KEOLIS_LYON", // devient 115
+	"15E": "KEOLIS_LYON", // devient 99EX
+	"16": "KEOLIS_LYON", // devient 116
+	"17": "KEOLIS_LYON", // devient 117
+	"18": "KEOLIS_LYON", // devient 118
+	"19": "KEOLIS_LYON", // devient 119
+	"20": "KEOLIS_LYON", // devient 120
+	"21": "KEOLIS_LYON", // devient 121
+	"22": "KEOLIS_LYON", // devient 122
+	"23": "PHILIBERT_TRANSPORT", // devient 123
+	"24": "KEOLIS_LYON", // devient 124
+	"25": "KEOLIS_LYON", // devient 125
+	"26": "KEOLIS_LYON", // devient 126
+	"27": "KEOLIS_LYON", // devient 127
+	"30": "COURRIERS_RHODANIENS", // devient 230
+	"32": "COURRIERS_RHODANIENS", // devient 232
+	"47": "COURRIERS_RHODANIENS", // devient 248
+	"52E": "KEOLIS_LYON", // devient 52EX
+	"89D": "KEOLIS_LYON", // devient 89EX
+	"98E": "KEOLIS_LYON", // devient 98EX
+	S1: "KEOLIS_LYON", // devient 133
+	S2: "TRANSDEV_RHONE_ALPES", // devient 138
+	S3: "CARS_FAURE", // devient 139
+	S4A: "KEOLIS_LYON", // devient 104A
+	S4B: "KEOLIS_LYON", // devient 104B
+	S5: "KEOLIS_AUTOCARS_PLANCHE", // devient 140
+	S6: "KEOLIS_LYON", // devient 141
+	S7: "PHILIBERT_TRANSPORT", // devient 142
+	S8: "KEOLIS_AUTOCARS_PLANCHE", // devient 143
+	S9: "KEOLIS_LYON", // devient 144
+	S10: "PHILIBERT_TRANSPORT", // devient 134
+	S11: "KEOLIS_LYON", // devient 135
+	S14: "TRANSDEV_RHONE_ALPES", // devient 136
+	S15: "KEOLIS_LYON", // devient 137
+	ZI1: "KEOLIS_LYON", // devient 145
+	ZI2: "KEOLIS_LYON", // devient 146
+	ZI3: "KEOLIS_LYON", // devient 147
+	ZI4: "KEOLIS_LYON", // devient 148
+	ZI5: "COURRIERS_RHODANIENS", // devient 149
+	ZI8: "KEOLIS_LYON", // devient 150
+	N20: "TRANSDEV_RHONE_ALPES", // devient N185
+	N80: "KEOLIS_LYON", // devient N180
+	N81: "CARS_FAURE", // devient N181
+	N82: "MAISAVIA", // devient N182
+	N83: "KEOLIS_LYON", // devient N183
+	N84: "PHILIBERT_TRANSPORT", // devient N184
+	N100: "KEOLIS_LYON", // devient N186
+	GE2: "CARS_FAURE", // devient 130
+	GE4: "TRANSDEV_RHONE_ALPES", // devient 131
+	GE6: "TRANSDEV_RHONE_ALPES", // devient 132
+	"203": "MAISAVIA", // devient C203
+	"204": "KEOLIS_AUTOCARS_PLANCHE", // devient C204
+	BGS1: "KEOLIS_LYON", // devient N195
+	BGS2: "KEOLIS_LYON", // devient N196
+	BGS4: "KEOLIS_LYON", // devient N197
 };
 
 export function getOperatorByLine(lineNumber: string, vehicleRef: string) {
