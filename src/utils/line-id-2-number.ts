@@ -182,6 +182,7 @@ export const lineIdToNumber: Record<string, string> = {
 	GE4: "GE4",
 	GE6: "GE6",
 	N100: "N100",
+	N20: "N20",
 	N80: "N80",
 	N83: "N83",
 	PL1: "PL1",
