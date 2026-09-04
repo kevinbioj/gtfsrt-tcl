@@ -111,7 +111,7 @@ const operatorByLine: Record<string, string> = {
 	"104B": "KEOLIS_LYON",
 	"105": "KEOLIS_LYON",
 	"106": "COURRIERS_RHODANIENS",
-	"106EX": "KEOLIS_LYON",
+	"106EX": "COURRIERS_RHODANIENS",
 	"107": "KEOLIS_LYON",
 	"108": "KEOLIS_LYON",
 	"109": "KEOLIS_LYON",
