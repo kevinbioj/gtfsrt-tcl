@@ -9,4 +9,8 @@ services:
       - TZ=Europe/Paris
     ports:
       - "127.0.0.1:50008:3000"
+    # La base des modifications et des infos trafic saisies (detours.sqlite, et ses -wal/-shm) et le
+    # graphe routier facultatif (road-graph.bin) vivent dans .cache : le dossier se monte en entier.
+    volumes:
+      - ./.cache:/app/.cache
     restart: unless-stopped

@@ -7,8 +7,10 @@
 	"main": "dist/index.js",
 	"type": "module",
 	"scripts": {
-		"build": "tsc",
 		"dev": "tsx --env-file .env src/index.ts",
+		"dev:web": "pnpm --filter ./web dev",
+		"build": "tsc && pnpm --filter ./web build",
+		"build:graph": "tsx src/tools/build-road-graph.ts",
 		"start": "node --env-file .env dist/index.js",
 		"check": "biome check",
 		"check:fix": "biome check --fix"
@@ -21,6 +23,8 @@
 	},
 	"dependencies": {
 		"@hono/node-server": "^2.1.6",
+		"entities": "^9.0.0",
+		"fflate": "^0.8.3",
 		"gtfs-realtime-bindings": "^2.2.0",
 		"hono": "^4.13.17",
 		"hono-rate-limiter": "^0.5.4",

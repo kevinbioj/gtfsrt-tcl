@@ -11,6 +11,7 @@ RUN npm install -g --force corepack@latest
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY web/package.json ./web/
 
 # ---
 
@@ -19,6 +20,7 @@ FROM dependencies_base AS builder
 RUN pnpm install --frozen-lockfile
 
 COPY ./src/ ./src/
+COPY ./web/ ./web/
 COPY tsconfig.json ./
 RUN pnpm build
 
@@ -26,7 +28,8 @@ RUN pnpm build
 
 FROM dependencies_base AS production_dependencies
 
-RUN pnpm install --frozen-lockfile --prod
+# Le producteur seul : l'interface est déjà construite dans dist/admin-ui, ses dépendances n'ont rien à faire ici.
+RUN pnpm install --frozen-lockfile --prod --filter @bus-tracker/gtfsrt-tcl
 
 # ---
 

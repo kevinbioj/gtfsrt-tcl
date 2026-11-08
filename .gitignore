@@ -1,4 +1,6 @@
 dist/
 node_modules/
+.cache/
+*.osm.pbf
 .env
 .DS_Store

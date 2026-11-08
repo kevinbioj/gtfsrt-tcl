@@ -98,3 +98,43 @@ export type VehicleMonitoringResponse = {
 		}>;
 	}>;
 };
+
+export type SituationExchangeResponse = {
+	SituationExchangeDelivery: Array<{
+		Situations?: {
+			PtSituationElement?: Array<PtSituationElement>;
+		};
+	}>;
+};
+
+/**
+ * Une situation du Situation Exchange de TCL. Chaque info trafic y figure en deux exemplaires, que
+ * seul le texte distingue : `…_1` porte la description complète, `…_2` un titre court (cf.
+ * `siriSituationExchange`).
+ */
+export type PtSituationElement = {
+	SituationNumber: { value: string };
+	Version?: { value: number };
+	CreationTime?: string;
+	ValidityPeriod?: Array<{ StartTime?: string; EndTime?: string }>;
+	Description?: Array<{ value: string; lang?: string }>;
+	Summary?: Array<{ value: string; lang?: string }>;
+	References?: {
+		RelatedToRef?: Array<{ SituationNumber?: { value: string }; CreationTime?: string }>;
+	};
+	Consequences?: {
+		Consequence?: Array<{
+			Affects?: {
+				Networks?: {
+					AffectedNetwork?: Array<{
+						NetworkRef?: { value: string };
+						AffectedLine?: Array<{ LineRef: { value: string } }>;
+					}>;
+				};
+				StopPoints?: {
+					AffectedStopPoint?: Array<{ StopPointRef: { value: string } }>;
+				};
+			};
+		}>;
+	};
+};

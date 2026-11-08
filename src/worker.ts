@@ -7,7 +7,7 @@ import { REFRESH_INTERVAL } from "./config.js";
 import { useRealtimeStore } from "./gtfs-rt/use-realtime-store.js";
 import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
-import type { FeedData, WorkerMessage } from "./types.js";
+import type { RealtimeSnapshot } from "./types.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
 import { getOperatorByLine } from "./utils/operator-by-line.js";
@@ -15,23 +15,11 @@ import { parseSiriRef } from "./utils/parse-siri.js";
 
 const store = useRealtimeStore();
 
-function prepareFeedData(feed: GtfsRealtime.transit_realtime.FeedMessage): FeedData {
-	return {
-		pb: GtfsRealtime.transit_realtime.FeedMessage.encode(feed).finish(),
-		json: feed.toJSON(),
-		timestamp: Number(feed.header.timestamp),
-	};
-}
-
-// Override store.flush to send messages to parent thread
-const originalFlush = store.flush;
+// Le thread principal assemble les feeds : il y ajoute les modifications et les infos trafic.
 store.flush = () => {
-	originalFlush();
-
-	const message: WorkerMessage = {
-		global: prepareFeedData(store.feeds.global),
-		tripUpdates: prepareFeedData(store.feeds.tripUpdates),
-		vehiclePositions: prepareFeedData(store.feeds.vehiclePositions),
+	const message: RealtimeSnapshot = {
+		tripUpdates: store.tripUpdates,
+		vehiclePositions: store.vehiclePositions,
 	};
 
 	parentPort?.postMessage(message);

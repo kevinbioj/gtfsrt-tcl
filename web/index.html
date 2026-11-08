@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<!-- La racine de l'interface. Le producteur la réécrit en relatif à chaque adresse servie : ainsi elle
+		     suit le préfixe d'un proxy, qu'il ignore. En développement, Vite la sert telle quelle. -->
+		<base href="/admin/" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="robots" content="noindex" />
+		<link rel="icon" type="image/png" href="/src/assets/tcl.png" />
+		<title>GTFS-RT TCL</title>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script type="module" src="/src/main.tsx"></script>
+	</body>
+</html>

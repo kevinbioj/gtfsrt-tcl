@@ -16,7 +16,27 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"preset": "recommended"
+			"preset": "recommended",
+			"style": {
+				"noNonNullAssertion": "off"
+			},
+			"a11y": {
+				"noLabelWithoutControl": {
+					"level": "error",
+					"options": {
+						"inputComponents": [
+							"Input",
+							"Checkbox",
+							"Switch",
+							"RadioGroupItem",
+							"Textarea",
+							"InputGroupInput",
+							"Select",
+							"SelectTrigger"
+						]
+					}
+				}
+			}
 		}
 	},
 	"javascript": {
@@ -31,5 +51,31 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["web/src/components/ui/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off",
+						"useKeyWithClickEvents": "off",
+						"useFocusableInteractive": "off",
+						"noRedundantRoles": "off"
+					},
+					"suspicious": {
+						"noArrayIndexKey": "off"
+					},
+					"security": {
+						"noDangerouslySetInnerHtml": "off"
+					}
+				}
+			}
+		}
+	]
 }

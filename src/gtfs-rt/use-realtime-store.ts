@@ -1,33 +1,26 @@
 import type GtfsRealtime from "gtfs-realtime-bindings";
 
 import { SWEEP_THRESHOLD } from "../config.js";
-import { createFeed } from "./create-feed.js";
 
 let currentInterval: NodeJS.Timeout | undefined;
 
+/**
+ * Le temps réel de SIRI Lite, course par course et véhicule par véhicule. Une entrée que la source ne
+ * rafraîchit plus est balayée au bout de dix minutes ; `flush` transmet l'état au thread principal,
+ * qui en tire les feeds (cf. `worker.ts`).
+ */
 export function useRealtimeStore() {
-	const feeds = {
-		global: createFeed(null, null),
-		tripUpdates: createFeed(null, null),
-		vehiclePositions: createFeed(null, null),
-	};
-
 	const store = {
 		tripUpdates: new Map<string, GtfsRealtime.transit_realtime.ITripUpdate>(),
 		vehiclePositions: new Map<string, GtfsRealtime.transit_realtime.IVehiclePosition>(),
-		feeds,
-		flush: () => {
-			feeds.global = createFeed(store.tripUpdates, store.vehiclePositions);
-			feeds.tripUpdates = createFeed(store.tripUpdates, null);
-			feeds.vehiclePositions = createFeed(null, store.vehiclePositions);
-		},
+		flush: () => {},
 	};
 
 	if (currentInterval !== undefined) {
 		clearInterval(currentInterval);
 	}
 
-	setInterval(() => {
+	currentInterval = setInterval(() => {
 		const now = Temporal.Now.instant();
 
 		for (const [id, tripUpdate] of store.tripUpdates) {
@@ -42,12 +35,7 @@ export function useRealtimeStore() {
 				}
 			}
 
-			if (
-				now
-					// biome-ignore lint/style/noNonNullAssertion: we always set timestamp in store
-					.since(Temporal.Instant.fromEpochMilliseconds(+tripUpdate.timestamp! * 1000))
-					.total("minutes") >= 10
-			) {
+			if (now.since(Temporal.Instant.fromEpochMilliseconds(+tripUpdate.timestamp! * 1000)).total("minutes") >= 10) {
 				store.tripUpdates.delete(id);
 			}
 		}
@@ -55,7 +43,6 @@ export function useRealtimeStore() {
 		for (const [id, vehicle] of store.vehiclePositions) {
 			if (
 				Temporal.Now.instant()
-					// biome-ignore lint/style/noNonNullAssertion: we always set timestamp in store
 					.since(Temporal.Instant.fromEpochMilliseconds(+vehicle.timestamp! * 1000))
 					.total("minutes") >= 10
 			) {

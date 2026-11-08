@@ -1,0 +1,148 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-sans/700.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+@import "@fontsource/ibm-plex-mono/600.css";
+@import "leaflet/dist/leaflet.css";
+
+@theme inline {
+	--font-heading: var(--font-sans);
+	--font-sans: "IBM Plex Sans", system-ui, sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--color-ring: var(--ring);
+	--color-input: var(--input);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-accent: var(--accent);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-muted: var(--muted);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary: var(--secondary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary: var(--primary);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-popover: var(--popover);
+	--color-card-foreground: var(--card-foreground);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-background: var(--background);
+	--color-subtle: var(--subtle);
+	--color-strong: var(--strong);
+	--color-divider: var(--divider);
+	/* Les états de publication : publié, en attente, éteint, masqué. */
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-info-dot: var(--info-dot);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-warning-dot: var(--warning-dot);
+	--color-warning-border: var(--warning-border);
+	--color-neutral: var(--neutral);
+	--color-neutral-foreground: var(--neutral-foreground);
+	--color-neutral-dot: var(--neutral-dot);
+	--color-inverse: var(--inverse);
+	--color-inverse-foreground: var(--inverse-foreground);
+	--color-success: var(--success);
+	--color-map: var(--map);
+	--radius-sm: calc(var(--radius) * 0.6);
+	--radius-md: calc(var(--radius) * 0.8);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) * 1.4);
+	--radius-2xl: calc(var(--radius) * 1.8);
+	--radius-3xl: calc(var(--radius) * 2.2);
+	--radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+ * La palette de la maquette « Gestionnaire de modifications » : un fond gris très clair, des cartes
+ * blanches, un seul accent bleu. L'interface est claire seulement — c'est un outil de bureau.
+ */
+:root {
+	--background: #f4f5f3;
+	--foreground: #15181b;
+	--card: #ffffff;
+	--card-foreground: #15181b;
+	--popover: #ffffff;
+	--popover-foreground: #15181b;
+	--primary: #1d56c8;
+	--primary-foreground: #ffffff;
+	--secondary: #f1f2f0;
+	--secondary-foreground: #15181b;
+	--muted: #f6f7f5;
+	--muted-foreground: #5b626a;
+	--accent: #e8eefb;
+	--accent-foreground: #1747a6;
+	--destructive: #b42318;
+	--border: #dcdfdb;
+	--input: #c4c8c3;
+	--ring: #1d56c8;
+	--subtle: #4a5058;
+	--strong: #3d434a;
+	--divider: #e7e9e6;
+	--info: #e6eefc;
+	--info-foreground: #1747a6;
+	--info-dot: #1d56c8;
+	--warning: #fdf0e2;
+	--warning-foreground: #8a4300;
+	--warning-dot: #d9730d;
+	--warning-border: #f0c99a;
+	--neutral: #eeefed;
+	--neutral-foreground: #4a5058;
+	--neutral-dot: #8a9097;
+	--inverse: #3d434a;
+	--inverse-foreground: #ffffff;
+	--success: #1f8a4c;
+	--map: #eceee9;
+	--radius: 0.5rem;
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	html {
+		@apply font-sans;
+		font-size: 14px;
+	}
+	body {
+		@apply bg-background text-foreground;
+		line-height: 1.45;
+	}
+	button:not(:disabled),
+	[role="button"]:not(:disabled) {
+		cursor: pointer;
+	}
+	a {
+		color: var(--accent-foreground);
+	}
+	a:hover {
+		color: #0f3580;
+	}
+}
+
+/* Les étiquettes de la carte : pas de bulle, un halo blanc qui les détache du fond. */
+.map-label.leaflet-tooltip {
+	background: transparent;
+	border: 0;
+	box-shadow: none;
+	padding: 0;
+	font: 500 12px / 1.2 var(--font-sans);
+	color: var(--foreground);
+	text-shadow:
+		0 0 3px #fff,
+		0 0 3px #fff,
+		0 0 3px #fff;
+}
+.map-label.leaflet-tooltip::before {
+	display: none;
+}
+.leaflet-container {
+	font-family: var(--font-sans);
+	background: var(--map);
+}
