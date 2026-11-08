@@ -144,16 +144,6 @@ export function tripRun(tripId: string, date: string): string {
 }
 
 /**
- * L'identifiant d'entité d'une course reconstruite depuis l'horaire théorique : celui des courses du
- * temps réel, journée de service en plus — deux occurrences d'une même course peuvent circuler ensemble,
- * celle d'hier qui s'achève après minuit et celle d'aujourd'hui, et sous un identifiant nu la seconde
- * écraserait la première.
- */
-export function scheduledEntityId(tripId: string, date: string): string {
-	return `TCL:VehicleJourney::${tripId}:${date}:LOC`;
-}
-
-/**
  * Les trip updates des courses dont le flux source ne parle pas, reconstruits depuis le seul horaire
  * théorique. SIRI Lite ne parle que des courses qui roulent ou sont sur le point de partir, et une
  * suppression d'arrêt annoncée pour ce soir n'aurait sinon aucune course où s'annoncer d'ici là.
@@ -184,8 +174,8 @@ export function scheduledTripUpdates(
 	cancelIndex: CancelIndex,
 	covered: ReadonlySet<string>,
 	nowSeconds: number,
-): Map<string, GtfsRealtime.transit_realtime.ITripUpdate> {
-	const tripUpdates = new Map<string, GtfsRealtime.transit_realtime.ITripUpdate>();
+): GtfsRealtime.transit_realtime.ITripUpdate[] {
+	const tripUpdates: GtfsRealtime.transit_realtime.ITripUpdate[] = [];
 	const horizon = nowSeconds + TRIP_UPDATES_HORIZON;
 	const retainedSince = nowSeconds - FINISHED_TRIP_RETENTION;
 
@@ -211,11 +201,7 @@ export function scheduledTripUpdates(
 					: buildTripUpdate(gtfs, skipIndex, tripId, date, midnight, departure, nowSeconds);
 				if (tripUpdate === undefined) continue;
 
-				// L'identifiant porte la journée de service comme le descripteur, et pour la même raison :
-				// deux occurrences d'une même course peuvent circuler ensemble — celle d'hier qui s'achève
-				// après minuit et celle d'aujourd'hui qui part à « 25:10 » — et sous un identifiant nu, la
-				// seconde écraserait la première.
-				tripUpdates.set(scheduledEntityId(tripId, date), tripUpdate);
+				tripUpdates.push(tripUpdate);
 			}
 		}
 	}

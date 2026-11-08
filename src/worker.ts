@@ -8,6 +8,7 @@ import { useRealtimeStore } from "./gtfs-rt/use-realtime-store.js";
 import { fetchEstimatedTimetable } from "./siri-lite/estimated-timetable.js";
 import { fetchVehicleMonitoring } from "./siri-lite/vehicle-monitoring.js";
 import type { RealtimeSnapshot } from "./types.js";
+import { tripEntityId, vehicleEntityId } from "./utils/entity-ids.js";
 import { extractTripId } from "./utils/extract-trip-id.js";
 import { lineIdToNumber } from "./utils/line-id-2-number.js";
 import { getOperatorByLine } from "./utils/operator-by-line.js";
@@ -89,7 +90,8 @@ while (true) {
 				},
 			);
 
-			store.tripUpdates.set(`TCL:VehicleJourney::${tripId}:LOC`, {
+			if (tripId === undefined) continue;
+			store.tripUpdates.set(tripEntityId(tripId), {
 				stopTimeUpdate: stopTimeUpdates,
 				timestamp: Math.floor(Temporal.Instant.from(vehicleJourney.RecordedAtTime).epochMilliseconds / 1000),
 				trip: {
@@ -158,7 +160,7 @@ while (true) {
 					: firstJourneyCall.StopPointRef;
 			}
 
-			store.vehiclePositions.set(`TCL:Vehicle:${operatorRef}:${vehicleId}:LOC`, {
+			store.vehiclePositions.set(vehicleEntityId(`${operatorRef}:${vehicleId}`), {
 				currentStatus,
 				currentStopSequence,
 				occupancyStatus: match(vehicleActivity.MonitoredVehicleJourney.Occupancy)

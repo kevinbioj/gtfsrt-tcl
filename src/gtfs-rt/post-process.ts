@@ -1,5 +1,5 @@
 import type GtfsRealtime from "gtfs-realtime-bindings";
-
+import { tripEntityId } from "../utils/entity-ids.js";
 import { resolveServiceRun, scheduledTripUpdates, serviceDays, tripRun } from "./scheduled-trips.js";
 import {
 	applySkippedStops,
@@ -66,12 +66,14 @@ export function postProcessTripUpdates(
 		}
 
 		const midnight = run === undefined ? undefined : days.find((day) => day.date === run.date)?.midnight;
+		// Sa journée de service en suffixe, dès qu'on la connaît (cf. `tripEntityId`).
+		const entityId = run === undefined ? id : tripEntityId(run.tripId, run.date);
 
 		// Annulée par une modification ou une info trafic : ce que la source en dit ne tient plus.
 		if (tripId !== undefined && run !== undefined && midnight !== undefined) {
 			if (isCancelled(index.cancelIndex, gtfs, tripId, midnight)) {
 				declareCancelled(tripUpdate);
-				published.set(id, tripUpdate);
+				published.set(entityId, tripUpdate);
 				covered.add(tripRun(run.tripId, run.date));
 				cancelled += 1;
 				continue;
@@ -90,19 +92,23 @@ export function postProcessTripUpdates(
 			midnight,
 			Temporal.Instant.fromEpochMilliseconds(departsAt * 1000),
 		);
-		published.set(id, tripUpdate);
+		published.set(entityId, tripUpdate);
 
 		// Une course sans arrêt n'est pas publiée (cf. `createFeed`) : elle ne couvre rien, et c'est
 		// l'horaire théorique qui annonce ses suppressions.
 		if (run !== undefined && tripUpdate.stopTimeUpdate?.length) covered.add(tripRun(run.tripId, run.date));
 	}
 
+	// Une course que le temps réel tient sans en rien dire — aucun arrêt — n'est pas couverte : c'est
+	// sa version reconstruite, sous le même identifiant, qui la remplace.
 	const scheduled = scheduledTripUpdates(gtfs, index.skipIndex, index.cancelIndex, covered, nowSeconds);
-	for (const [id, tripUpdate] of scheduled) published.set(id, tripUpdate);
+	for (const tripUpdate of scheduled) {
+		published.set(tripEntityId(tripUpdate.trip?.tripId ?? "", tripUpdate.trip?.startDate), tripUpdate);
+	}
 
-	if (cancelled > 0 || scheduled.size > 0 || unresolved > 0) {
+	if (cancelled > 0 || scheduled.length > 0 || unresolved > 0) {
 		console.log(
-			`\t• ${realtime.size} realtime trip updates (${cancelled} cancelled, ${unresolved} without service day), ${scheduled.size} rebuilt from schedule.`,
+			`\t• ${realtime.size} realtime trip updates (${cancelled} cancelled, ${unresolved} without service day), ${scheduled.length} rebuilt from schedule.`,
 		);
 	}
 	return published;
