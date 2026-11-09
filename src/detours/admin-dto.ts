@@ -51,8 +51,9 @@ export type PatternDto = {
 export type DirectionDto = { directionId: number; headsigns: string[]; patterns: PatternDto[] };
 
 /**
- * `cartridgeHref` : le pictogramme de la ligne, `null` s'il n'est pas connu. `agencyId` : l'agence qui
- * l'exploite (`routes.agency_id`), et son nom ; `null` si le GTFS n'en dit rien.
+ * `cartridgeHref` : le pictogramme de la ligne, relatif à la racine de l'interface ; `null` s'il n'est
+ * pas connu. `agencyId` : l'agence qui l'exploite (`routes.agency_id`), et son nom ; `null` si le GTFS
+ * n'en dit rien.
  */
 export type RouteDto = LineDto & {
 	cartridgeHref: string | null;

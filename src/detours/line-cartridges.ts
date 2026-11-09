@@ -1,57 +1,32 @@
-/** Une ligne de `/api/networks/:id?withDetails=true`, réduite à ce qu'on en lit. */
-type NetworkLine = { references?: string[]; cartridgeHref?: string | null; archivedAt?: string | null };
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 
-export type LineCartridges = { of(routeId: string): string | null };
-
-let currentInterval: NodeJS.Timeout | undefined;
+export type LineCartridges = {
+	/** L'adresse du pictogramme d'une ligne, relative à la racine de l'interface ; `null` s'il n'y en a pas. */
+	of(routeId: string): string | null;
+	/** Le SVG d'une ligne, `undefined` s'il n'y en a pas. */
+	svg(routeId: string): string | undefined;
+};
 
 /**
- * Tient à jour le pictogramme de chaque ligne, d'après Bus Tracker. Un échec ponctuel laisse les
- * pictogrammes précédents en place ; d'ici au premier relevé, aucun n'est connu.
+ * Les pictogrammes des lignes, un `<route_id>.svg` chacun dans `dir` (cf. `pnpm fetch:cartridges`). Ils
+ * se lisent une fois pour toutes, au démarrage — quelques mégaoctets à peine : ils ne changent qu'avec
+ * le dépôt. Un dossier absent n'empêche rien, les lignes s'affichent alors à leurs couleurs.
  */
-export function useLineCartridges(url: string, interval: number): LineCartridges {
-	let cartridges = new Map<string, string>();
-
-	const refresh = async () => {
-		cartridges = (await loadCartridges(url)) ?? cartridges;
-	};
-	void refresh();
-
-	if (currentInterval !== undefined) {
-		clearInterval(currentInterval);
-	}
-	currentInterval = setInterval(refresh, interval);
-
-	return {
-		/** « C1 », « T3 » : la ligne se retrouve par son `route_id`, que Bus Tracker cite en « TCL:Line:C1 ». */
-		of: (routeId) => cartridges.get(routeId) ?? null,
-	};
-}
-
-/** Code de ligne → pictogramme, lignes archivées exclues. `undefined` en cas d'échec. */
-async function loadCartridges(url: string): Promise<Map<string, string> | undefined> {
-	console.log("➔ Fetching line cartridges.");
+export function useLineCartridges(dir: string): LineCartridges {
+	const cartridges = new Map<string, string>();
 
 	try {
-		// Cloudflare refuse l'agent par défaut de Node (« node »).
-		const response = await fetch(url, { headers: { "User-Agent": "gtfsrt-tcl" } });
-		if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-		const { lines } = (await response.json()) as { lines?: NetworkLine[] };
-		const cartridges = new Map<string, string>();
-
-		for (const line of lines ?? []) {
-			if (line.archivedAt || !line.cartridgeHref) continue;
-			for (const reference of line.references ?? []) {
-				const match = /^[^:]+:Line:(.+)$/.exec(reference);
-				if (match?.[1] !== undefined) cartridges.set(match[1], line.cartridgeHref);
-			}
+		for (const file of readdirSync(dir)) {
+			if (file.endsWith(".svg")) cartridges.set(file.slice(0, -".svg".length), readFileSync(join(dir, file), "utf8"));
 		}
-
 		console.log(`✓ Loaded ${cartridges.size} line cartridges.`);
-		return cartridges;
 	} catch (cause) {
-		console.error("✘ Failed to update line cartridges!", cause);
-		return undefined;
+		console.error("✘ Failed to load line cartridges!", cause);
 	}
+
+	return {
+		of: (routeId) => (cartridges.has(routeId) ? `line-cartridges/${encodeURIComponent(routeId)}.svg` : null),
+		svg: (routeId) => cartridges.get(routeId),
+	};
 }

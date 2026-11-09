@@ -11,8 +11,7 @@ import {
 	ADMIN_USERNAME,
 	DETOURS_DB_PATH,
 	GTFS_CHECK_INTERVAL,
-	LINE_CARTRIDGES_INTERVAL,
-	LINE_CARTRIDGES_URL,
+	LINE_CARTRIDGES_DIR,
 	PORT,
 	REINDEX_INTERVAL,
 	ROAD_GRAPH_PATH,
@@ -92,8 +91,7 @@ const alertPublication = useAlertPublication({
 });
 // Sa présence est constatée ici, ses octets ne seront lus qu'au premier accrochage.
 const roadGraph = useRoadGraph(ROAD_GRAPH_PATH);
-// Rien qu'une affaire d'affichage : on ne l'attend pas, l'interface s'en passe le temps qu'il arrive.
-const lineCartridges = useLineCartridges(LINE_CARTRIDGES_URL, LINE_CARTRIDGES_INTERVAL);
+const lineCartridges = useLineCartridges(LINE_CARTRIDGES_DIR);
 
 /**
  * Réassemble les entités des déviations déclarées. Les journées de service tournent, les courses

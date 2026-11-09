@@ -70,11 +70,11 @@ export const SERVICE_ALERTS_ENABLED = process.env.SERVICE_ALERTS !== "off";
 export const SERVICE_ALERTS_INTERVAL = Temporal.Duration.from({ minutes: 1 }).total("milliseconds");
 
 /**
- * Les lignes de TCL telles que Bus Tracker les présente, dont le pictogramme que l'interface de
- * gestion affiche. Il ne change qu'aux refontes, d'où un rafraîchissement espacé.
+ * Les pictogrammes des lignes, que l'interface de gestion affiche : un SVG par `route_id`, tiré de la
+ * carte interactive de TCL par `pnpm fetch:cartridges` et versionné dans le dépôt. Relatif au dossier
+ * de lancement, comme `ADMIN_UI_DIR`.
  */
-export const LINE_CARTRIDGES_URL = "https://bus-tracker.fr/api/networks/91?withDetails=true";
-export const LINE_CARTRIDGES_INTERVAL = Temporal.Duration.from({ hours: 12 }).total("milliseconds");
+export const LINE_CARTRIDGES_DIR = "assets/line-cartridges";
 
 /**
  * Base des modifications, des infos trafic et des arrêts provisoires, saisis dans l'interface

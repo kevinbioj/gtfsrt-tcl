@@ -816,6 +816,21 @@ export function adminRoutes(deps: AdminDependencies): Hono {
 		});
 	});
 
+	/**
+	 * Le pictogramme d'une ligne. C'est un SVG venu de la carte de TCL, servi depuis l'origine de
+	 * l'interface : sa politique de sécurité lui interdit tout script, au cas où on l'ouvrirait seul.
+	 */
+	admin.get("/line-cartridges/:file", (c) => {
+		const svg = deps.cartridges.svg(c.req.param("file").replace(/\.svg$/, ""));
+		if (svg === undefined) return c.body(null, 404);
+		return c.body(svg, 200, {
+			"Content-Type": "image/svg+xml",
+			"Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'",
+			"X-Content-Type-Options": "nosniff",
+			"Cache-Control": "private, max-age=86400",
+		});
+	});
+
 	// L'interface elle-même : ses fichiers, puis sa page pour toute autre adresse — c'est elle qui route.
 	admin.use(
 		"/assets/*",

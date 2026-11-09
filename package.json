@@ -11,6 +11,7 @@
 		"dev:web": "pnpm --filter ./web dev",
 		"build": "tsc && pnpm --filter ./web build",
 		"build:graph": "tsx src/tools/build-road-graph.ts",
+		"fetch:cartridges": "tsx src/tools/fetch-line-cartridges.ts",
 		"start": "node --env-file .env dist/index.js",
 		"check": "biome check",
 		"check:fix": "biome check --fix"

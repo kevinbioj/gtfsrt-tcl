@@ -6,8 +6,8 @@ import { defineConfig } from "vite";
 // L'interface est servie par le producteur sous /admin, derrière son authentification — et, en
 // exploitation, derrière un proxy qui y ajoute son propre préfixe (/gtfs-rt/tcl/admin). Ses adresses
 // sont donc toutes relatives : à la base que la page déclare (cf. `<base>` dans index.html), que le
-// producteur ajuste à chaque adresse servie. En développement, Vite la sert lui-même et relaie l'API
-// au producteur lancé à côté (`pnpm dev`).
+// producteur ajuste à chaque adresse servie. En développement, Vite la sert lui-même et relaie l'API et
+// les pictogrammes des lignes au producteur lancé à côté (`pnpm dev`).
 export default defineConfig({
 	base: "./",
 	plugins: [react(), tailwindcss()],
@@ -26,6 +26,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/admin/api": "http://localhost:3000",
+			"/admin/line-cartridges": "http://localhost:3000",
 		},
 	},
 });
