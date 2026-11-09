@@ -13,6 +13,7 @@ import {
 	GTFS_CHECK_INTERVAL,
 	LINE_CARTRIDGES_DIR,
 	PORT,
+	PYSAE_FEEDS,
 	REINDEX_INTERVAL,
 	ROAD_GRAPH_PATH,
 	SERVICE_ALERTS_ENABLED,
@@ -31,6 +32,7 @@ import { postProcessTripUpdates } from "./gtfs-rt/post-process.js";
 import { useChangeTracker } from "./gtfs-rt/track-changes.js";
 import { useServiceAlerts } from "./gtfs-rt/use-service-alerts.js";
 import { useStaticGtfs } from "./gtfs-rt/use-static-gtfs.js";
+import { mergeRealtime, usePysaeFeeds } from "./pysae/use-pysae-feeds.js";
 import { useRoadGraph } from "./routing/road-graph.js";
 import type { FeedData, PublishedFeeds, RealtimeSnapshot } from "./types.js";
 
@@ -92,6 +94,8 @@ const alertPublication = useAlertPublication({
 // Sa présence est constatée ici, ses octets ne seront lus qu'au premier accrochage.
 const roadGraph = useRoadGraph(ROAD_GRAPH_PATH);
 const lineCartridges = useLineCartridges(LINE_CARTRIDGES_DIR);
+// Les lignes que Cars Faure exploite en sous-traitance : SIRI Lite n'en a que l'horaire théorique.
+const pysae = usePysaeFeeds(PYSAE_FEEDS, staticGtfs, () => publish());
 
 /**
  * Réassemble les entités des déviations déclarées. Les journées de service tournent, les courses
@@ -122,21 +126,22 @@ function encode(feed: GtfsRealtime.transit_realtime.FeedMessage): FeedData {
 }
 
 /**
- * Réassemble et encode les quatre feeds : le temps réel du dernier relevé, corrigé de ce qui a été
- * saisi, les déviations et les infos trafic. Chaque feed est daté de sa dernière modification.
+ * Réassemble et encode les quatre feeds : le temps réel du dernier relevé — SIRI Lite et Pysae —, corrigé
+ * de ce qui a été saisi, les déviations et les infos trafic. Chaque feed est daté de sa dernière modification.
  */
 function publish() {
 	try {
 		if (alertPublication.dropStale()) modificationIndex.reindex();
 
 		const nowSeconds = Math.floor(Date.now() / 1000);
-		let tripUpdates = realtime.tripUpdates;
+		const sources = mergeRealtime(realtime, pysae.snapshot(nowSeconds));
+		let tripUpdates = sources.tripUpdates;
 		try {
-			tripUpdates = postProcessTripUpdates(realtime.tripUpdates, staticGtfs.data, modificationIndex, nowSeconds);
+			tripUpdates = postProcessTripUpdates(sources.tripUpdates, staticGtfs.data, modificationIndex, nowSeconds);
 		} catch (cause) {
 			console.error("✘ Failed to apply modifications to trip updates, publishing them as received:", cause);
 		}
-		const { vehiclePositions } = realtime;
+		const { vehiclePositions } = sources;
 		const alertEntities = alertPublication.publishedAlerts();
 
 		const tripUpdatesAt = changes.stamp("trip-updates", [[...tripUpdates], detourEntities]);

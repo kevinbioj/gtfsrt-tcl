@@ -70,6 +70,54 @@ export const SERVICE_ALERTS_ENABLED = process.env.SERVICE_ALERTS !== "off";
 export const SERVICE_ALERTS_INTERVAL = Temporal.Duration.from({ minutes: 1 }).total("milliseconds");
 
 /**
+ * Les flux Pysae des lignes que Cars Faure exploite en sous-traitance — 130, 139, 212, 213, N181 et
+ * des lignes scolaires. SIRI Lite les connaît, mais sans le moindre horaire temps réel ni la moindre
+ * position : c'est Pysae, l'outil d'exploitation du sous-traitant, qui suit ses véhicules.
+ *
+ * Chaque groupe publie un GTFS-RT (`<groupe>/gtfs-rt`) qui se rapporte à son propre GTFS
+ * (`<groupe>/gtfs/pub`) : les arrêts de TCL, mais d'autres identifiants de course, et des courses
+ * parfois découpées autrement (cf. `matchCourse`). `routeAliases` traduit les noms de ligne que le
+ * seul préfixe « JD » des scolaires ne suffit pas à retrouver dans le GTFS de TCL.
+ *
+ * Les véhicules sont rangés sous l'opérateur qui les fait rouler, quel que soit le titulaire du lot.
+ */
+export const PYSAE_API_URL = "https://pysae.com/api/v2/groups";
+export type PysaeFeedConfig = { group: string; operator: string; routeAliases: Readonly<Record<string, string>> };
+export const PYSAE_FEEDS: readonly PysaeFeedConfig[] = [
+	{ group: "transports-faure-28bi", operator: "CARS_FAURE", routeAliases: {} },
+	{ group: "cars-faure-tcl", operator: "CARS_FAURE", routeAliases: { N81: "N181", "750": "JD950" } },
+];
+/**
+ * Intervalle de relevé des flux Pysae, trois fois plus serré que celui de SIRI Lite : chaque relevé
+ * republie les feeds (cf. `usePysaeFeeds`).
+ */
+export const PYSAE_REFRESH_INTERVAL = Temporal.Duration.from({ seconds: 10 }).total("milliseconds");
+
+/**
+ * Écart toléré entre l'horaire théorique d'un arrêt selon Pysae et selon TCL pour y voir le même
+ * passage. Les deux GTFS ne sont pas de la même version : à une minute ou deux près, c'est le même
+ * horaire ; au-delà, c'est une autre course.
+ */
+export const PYSAE_MATCH_TOLERANCE = Temporal.Duration.from({ minutes: 2 }).total("seconds");
+/**
+ * Écart toléré, une fois la course retrouvée, pour y rattacher ses autres arrêts : passé un arrêt que
+ * seule une version dessert, tout le reste de la course peut se décaler de plusieurs minutes.
+ */
+export const PYSAE_DRIFT_TOLERANCE = Temporal.Duration.from({ minutes: 15 }).total("seconds");
+
+/**
+ * Distance, en kilomètres, en deçà de laquelle deux quais de même nom sont le même arrêt : Pysae
+ * place parfois un terminus sur le quai d'en face de celui que TCL dessert.
+ */
+export const PYSAE_SIBLING_STOP_DISTANCE = 0.3;
+
+/**
+ * Durée pendant laquelle une course reste publiée après son dernier passage annoncé, et un véhicule
+ * après sa dernière position. Pysae garde au feed toutes les courses de la journée, finies comprises.
+ */
+export const PYSAE_RETENTION = Temporal.Duration.from({ minutes: 10 }).total("seconds");
+
+/**
  * Les pictogrammes des lignes, que l'interface de gestion affiche : un SVG par `route_id`, tiré de la
  * carte interactive de TCL par `pnpm fetch:cartridges` et versionné dans le dépôt. Relatif au dossier
  * de lancement, comme `ADMIN_UI_DIR`.
