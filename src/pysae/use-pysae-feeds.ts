@@ -346,9 +346,9 @@ function vehicleDescriptor(
 	operator: string,
 	vehicle: VehicleDescriptor | null | undefined,
 ): VehicleDescriptor | undefined {
-	const number = vehicle?.label || vehicle?.id;
-	if (!number) return undefined;
+	if (!vehicle) return undefined;
 
+	const number = vehicle.label ?? `UNKNOWN_${vehicle.id}`;
 	const id = `${operator}:${number}`;
 	return vehicle?.licensePlate ? { id, label: id, licensePlate: vehicle.licensePlate } : { id, label: id };
 }
