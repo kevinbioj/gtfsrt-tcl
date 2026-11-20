@@ -4,11 +4,8 @@ WORKDIR /app
 # ---
 
 FROM base AS dependencies_base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 
-RUN npm install -g --force corepack@latest
-RUN corepack enable
+RUN npm install -g pnpm
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY web/package.json ./web/

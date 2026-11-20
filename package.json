@@ -16,18 +16,18 @@
 		"check": "biome check",
 		"check:fix": "biome check --fix"
 	},
-	"packageManager": "pnpm@12.18.0",
+	"packageManager": "pnpm@12.21.0",
 	"devDependencies": {
-		"@biomejs/biome": "2.6.6",
+		"@biomejs/biome": "2.6.8",
 		"@types/node": "^26.6.6",
 		"typescript": "^7.0.2"
 	},
 	"dependencies": {
-		"@hono/node-server": "^2.1.7",
+		"@hono/node-server": "^2.1.9",
 		"entities": "^9.0.0",
 		"fflate": "^0.8.3",
-		"gtfs-realtime-bindings": "^2.2.0",
-		"hono": "^4.13.18",
+		"gtfs-realtime-bindings": "^3.0.0",
+		"hono": "^4.13.19",
 		"hono-rate-limiter": "^0.5.4",
 		"ts-pattern": "^5.9.2",
 		"tsx": "^4.23.15"
